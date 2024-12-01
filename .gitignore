@@ -31,15 +31,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-### Maven config ###
-mvnw
-mvnw.cmd
-maven-wrapper.properties
-
-### Application properties ###
-*.properties
-
-### Log files ###
-*.log
-logs/*
