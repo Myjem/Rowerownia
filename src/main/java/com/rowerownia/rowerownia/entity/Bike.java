@@ -10,7 +10,14 @@ import jakarta.persistence.*;
 @Table(name = "bike")
 public class Bike {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(
+            name = "bike_sequence",
+            sequenceName = "bike_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "bike_sequence")
     private Integer bikeId;
     private String bikeName;
     private String bikeSize;
