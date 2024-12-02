@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "bikeBooking")
-public class bikeBooking {
+public class BikeBooking {
     @Id
     @SequenceGenerator(
             name = "bikeBooking_sequence",
@@ -34,13 +34,13 @@ public class bikeBooking {
     @Column(name = "bikeId")
     private List<Integer> bikeId;
 
-    public bikeBooking() {
+    public BikeBooking() {
     }
 
-    public bikeBooking(int i, LocalDate localDate, LocalDate date, LocalDate localDate1, enums.status pending) {
+    public BikeBooking(int i, LocalDate localDate, LocalDate date, LocalDate localDate1, enums.status pending) {
     }
 
-    public bikeBooking(Integer userId, LocalDate bbookingDate, LocalDate bstartDate, LocalDate bendDate, enums.status bikeStatus, List<Integer> bikeId) {
+    public BikeBooking(Integer userId, LocalDate bbookingDate, LocalDate bstartDate, LocalDate bendDate, enums.status bikeStatus, List<Integer> bikeId) {
         this.userId = userId;
         this.bbookingDate = bbookingDate;
         this.bstartDate = bstartDate;

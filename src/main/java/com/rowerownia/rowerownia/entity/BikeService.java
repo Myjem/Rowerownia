@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "bike_service")
-public class bikeService {
+public class BikeService {
     @Id
     @SequenceGenerator(
             name = "bikeService_sequence",
@@ -24,10 +24,10 @@ public class bikeService {
     private Integer serviceTime;
     private Integer servicePrice;
 
-    public bikeService() {
+    public BikeService() {
     }
 
-    public bikeService(String serviceName, Integer serviceTime, Integer servicePrice) {
+    public BikeService(String serviceName, Integer serviceTime, Integer servicePrice) {
         this.serviceName = serviceName;
         this.serviceTime = serviceTime;
         this.servicePrice = servicePrice;

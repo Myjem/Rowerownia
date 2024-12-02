@@ -2,24 +2,21 @@ package com.rowerownia.rowerownia.controller;
 
 
 import com.rowerownia.rowerownia.entity.User;
-import com.rowerownia.rowerownia.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/user")
 public class UserController {
 
-    private final UserService userService;
+    private final com.rowerownia.rowerownia.service.userService userService;
 
     @Autowired
 
-    public UserController(UserService userService) {
+    public UserController(com.rowerownia.rowerownia.service.userService userService) {
         this.userService = userService;
     }
 
@@ -27,4 +24,10 @@ public class UserController {
     public List<User> getUser() {
         return userService.getUser();
     }
+
+    @PostMapping
+    public void registerNewUser(@RequestBody User user) {
+        userService.addNewUser(user);
+    }
+
 }

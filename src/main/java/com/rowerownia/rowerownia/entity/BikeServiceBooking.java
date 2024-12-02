@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "bikeserviceBooking")
-public class bikeserviceBooking {
+public class BikeServiceBooking {
     @Id
     @SequenceGenerator(
             name = "bikeserviceBooking_sequence",
@@ -26,10 +26,10 @@ public class bikeserviceBooking {
     private LocalDate serviceDate;
     private enums.status serviceStatus;
 
-    public bikeserviceBooking() {
+    public BikeServiceBooking() {
     }
 
-    public bikeserviceBooking(Integer userId, LocalDate sbookingDate, LocalDate serviceDate, enums.status serviceStatus) {
+    public BikeServiceBooking(Integer userId, LocalDate sbookingDate, LocalDate serviceDate, enums.status serviceStatus) {
         this.userId = userId;
         this.sbookingDate = sbookingDate;
         this.serviceDate = serviceDate;
