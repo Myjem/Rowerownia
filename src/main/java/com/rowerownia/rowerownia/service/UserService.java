@@ -1,6 +1,7 @@
 package com.rowerownia.rowerownia.service;
 
 import com.rowerownia.rowerownia.entity.User;
+import com.rowerownia.rowerownia.entity.enums;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,7 @@ public class UserService {
                         LocalDate.of(2000,10,12),
                         "name",
                         "surname",
-                        "user"
+                        enums.level.USER
                 )
         );
     }

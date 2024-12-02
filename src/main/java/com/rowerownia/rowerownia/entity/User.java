@@ -26,12 +26,12 @@ public class User {
     private LocalDate birthDate;
     private String name;
     private String surname;
-    private String accessLevel;
+    private enums.level accessLevel;
 
     public User() {
     }
 
-    public User(String login, String password, LocalDate birthDate, String name, String surname, String accessLevel) {
+    public User(String login, String password, LocalDate birthDate, String name, String surname, enums.level accessLevel) {
         this.login = login;
         this.password = password;
         this.birthDate = birthDate;
@@ -40,11 +40,15 @@ public class User {
         this.accessLevel = accessLevel;
     }
 
-    public String getAccessLevel() {
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public enums.level getAccessLevel() {
         return accessLevel;
     }
 
-    public void setAccessLevel(String accessLevel) {
+    public void setAccessLevel(enums.level accessLevel) {
         this.accessLevel = accessLevel;
     }
 
@@ -101,4 +105,3 @@ public class User {
                 '}';
     }
 }
-
