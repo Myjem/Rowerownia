@@ -1,10 +1,10 @@
 package com.rowerownia.rowerownia.entity;
 
-public class enums {
+public class Enums {
     public enum status {PENDING, FINISHED, DELETED};
     public enum level {WORKER, USER};
 
-    public enums() {
+    public Enums() {
     }
 
 }

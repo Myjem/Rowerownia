@@ -2,8 +2,12 @@ package com.rowerownia.rowerownia.controller;
 
 
 import com.rowerownia.rowerownia.entity.User;
+import com.rowerownia.rowerownia.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 
 import java.util.List;
@@ -12,17 +16,16 @@ import java.util.List;
 @RequestMapping(path = "api/v1/user")
 public class UserController {
 
-    private final com.rowerownia.rowerownia.service.userService userService;
+    private final UserService userService;
 
     @Autowired
-
-    public UserController(com.rowerownia.rowerownia.service.userService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
-    public List<User> getUser() {
-        return userService.getUser();
+    public List<User> getUsers() {
+        return userService.getUsers();
     }
 
     @PostMapping

@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "bikeBooking")
+@Table
 public class BikeBooking {
     @Id
     @SequenceGenerator(
@@ -28,7 +28,7 @@ public class BikeBooking {
     private LocalDate bbookingDate;
     private LocalDate bstartDate;
     private LocalDate bendDate;
-    private enums.status bikeStatus;
+    private Enums.status bikeStatus;
     @ElementCollection
     @CollectionTable(name = "bike_ids", joinColumns = @JoinColumn(name = "bikeBookingId"))
     @Column(name = "bikeId")
@@ -37,10 +37,10 @@ public class BikeBooking {
     public BikeBooking() {
     }
 
-    public BikeBooking(int i, LocalDate localDate, LocalDate date, LocalDate localDate1, enums.status pending) {
+    public BikeBooking(int i, LocalDate localDate, LocalDate date, LocalDate localDate1, Enums.status pending) {
     }
 
-    public BikeBooking(Integer userId, LocalDate bbookingDate, LocalDate bstartDate, LocalDate bendDate, enums.status bikeStatus, List<Integer> bikeId) {
+    public BikeBooking(Integer userId, LocalDate bbookingDate, LocalDate bstartDate, LocalDate bendDate, Enums.status bikeStatus, List<Integer> bikeId) {
         this.userId = userId;
         this.bbookingDate = bbookingDate;
         this.bstartDate = bstartDate;
@@ -85,11 +85,11 @@ public class BikeBooking {
         this.bendDate = bendDate;
     }
 
-    public enums.status getBikeStatus() {
+    public Enums.status getBikeStatus() {
         return bikeStatus;
     }
 
-    public void setBikeStatus(enums.status bikeStatus) {
+    public void setBikeStatus(Enums.status bikeStatus) {
         this.bikeStatus = bikeStatus;
     }
 

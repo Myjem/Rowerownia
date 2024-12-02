@@ -9,7 +9,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "bikeserviceBooking")
+@Table
 public class BikeServiceBooking {
     @Id
     @SequenceGenerator(
@@ -24,12 +24,12 @@ public class BikeServiceBooking {
     private Integer userId;
     private LocalDate sbookingDate;
     private LocalDate serviceDate;
-    private enums.status serviceStatus;
+    private Enums.status serviceStatus;
 
     public BikeServiceBooking() {
     }
 
-    public BikeServiceBooking(Integer userId, LocalDate sbookingDate, LocalDate serviceDate, enums.status serviceStatus) {
+    public BikeServiceBooking(Integer userId, LocalDate sbookingDate, LocalDate serviceDate, Enums.status serviceStatus) {
         this.userId = userId;
         this.sbookingDate = sbookingDate;
         this.serviceDate = serviceDate;
@@ -64,11 +64,11 @@ public class BikeServiceBooking {
         this.serviceDate = serviceDate;
     }
 
-    public enums.status getServiceStatus() {
+    public Enums.status getServiceStatus() {
         return serviceStatus;
     }
 
-    public void setServiceStatus(enums.status serviceStatus) {
+    public void setServiceStatus(Enums.status serviceStatus) {
         this.serviceStatus = serviceStatus;
     }
 

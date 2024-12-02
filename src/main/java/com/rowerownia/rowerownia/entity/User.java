@@ -9,7 +9,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "user")
+@Table
 public class User {
     @Id
     @SequenceGenerator(
@@ -26,12 +26,21 @@ public class User {
     private LocalDate birthDate;
     private String name;
     private String surname;
-    private enums.level accessLevel;
+    private Enums.level accessLevel;
 
     public User() {
     }
 
-    public User(String login, String password, LocalDate birthDate, String name, String surname, enums.level accessLevel) {
+    public User(String login, String password, LocalDate birthDate, String name, String surname) {
+        this.login = login;
+        this.password = password;
+        this.birthDate = birthDate;
+        this.name = name;
+        this.surname = surname;
+        this.accessLevel = Enums.level.USER;
+    }
+
+    public User(String login, String password, LocalDate birthDate, String name, String surname, Enums.level accessLevel) {
         this.login = login;
         this.password = password;
         this.birthDate = birthDate;
@@ -44,11 +53,11 @@ public class User {
         return userId;
     }
 
-    public enums.level getAccessLevel() {
+    public Enums.level getAccessLevel() {
         return accessLevel;
     }
 
-    public void setAccessLevel(enums.level accessLevel) {
+    public void setAccessLevel(Enums.level accessLevel) {
         this.accessLevel = accessLevel;
     }
 
