@@ -37,6 +37,9 @@ public class bikeBooking {
     public bikeBooking() {
     }
 
+    public bikeBooking(int i, LocalDate localDate, LocalDate date, LocalDate localDate1, enums.status pending) {
+    }
+
     public bikeBooking(Integer userId, LocalDate bbookingDate, LocalDate bstartDate, LocalDate bendDate, enums.status bikeStatus, List<Integer> bikeId) {
         this.userId = userId;
         this.bbookingDate = bbookingDate;
