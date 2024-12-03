@@ -2,10 +2,12 @@ package com.rowerownia.rowerownia.service;
 
 import com.rowerownia.rowerownia.entity.User;
 import com.rowerownia.rowerownia.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -37,4 +39,22 @@ public class UserService {
         }
         userRepository.deleteById(userId);
     }
+
+    @Transactional
+    public void updateUser(Integer userId, String name, String surname){
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("user with id " + userId + " does not exists"));
+
+        if (name != null &&
+                name.length() > 0 &&
+                !Objects.equals(user.getName(),name)){
+            user.setName(name);
+        }
+        if (surname != null &&
+                surname.length() > 0 &&
+                !Objects.equals(user.getSurname(),surname)){
+            user.setSurname(surname);
+        }
+    }
+
+
 }
