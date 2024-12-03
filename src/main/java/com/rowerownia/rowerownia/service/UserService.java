@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -21,6 +23,18 @@ public class UserService {
     }
 
     public  void addNewUser(User user) {
-        System.out.println(user);
+        Optional<User> userByLogin = userRepository.findUserByLogin(user.getLogin());
+        if(userByLogin.isPresent()){
+            throw new IllegalStateException("login taken");
+        }
+        userRepository.save(user);
+    }
+
+    public void deleteUser(Integer userId){
+        boolean exists = userRepository.existsById(userId);
+        if(!exists){
+            throw new IllegalStateException("user with id " + userId + " does not exists");
+        }
+        userRepository.deleteById(userId);
     }
 }

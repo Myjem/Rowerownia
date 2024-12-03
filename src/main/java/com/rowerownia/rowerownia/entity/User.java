@@ -26,7 +26,7 @@ public class User {
     private LocalDate birthDate;
     private String name;
     private String surname;
-    private Enums.level accessLevel;
+    private Enums.level accessLevel= Enums.level.USER;
 
     public User() {
     }
