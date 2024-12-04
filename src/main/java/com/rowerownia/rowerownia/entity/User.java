@@ -9,7 +9,8 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table
+@Table(
+        name = "users")
 public class User {
     @Id
     @SequenceGenerator(
@@ -20,12 +21,45 @@ public class User {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "user_sequence")
+    @Column(
+            name = "user_id",
+            updatable = false
+    )
     private Integer userId;
+    @Column(
+            name = "login",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String login;
+    @Column(
+            name = "password",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String password;
+    @Column(
+            name = "birth_date",
+            nullable = false
+    )
     private LocalDate birthDate;
+    @Column(
+            name = "name",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String name;
+    @Column(
+            name = "surname",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String surname;
+    @Column(
+            name = "access_level",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private Enums.level accessLevel= Enums.level.USER;
 
     public User() {
