@@ -1,7 +1,6 @@
 package com.rowerownia.rowerownia.configuration;
 
 import com.rowerownia.rowerownia.entity.User;
-import com.rowerownia.rowerownia.entity.Enums;
 import com.rowerownia.rowerownia.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +13,7 @@ import java.util.List;
 @Configuration
 public class UserConfig  {
     @Bean
-    CommandLineRunner commandLineRunner(UserRepository repository) {
+    CommandLineRunner usercommandLineRunner(UserRepository repository) {
         return args -> {
             User defu = new User(
                     "login",

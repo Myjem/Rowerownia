@@ -39,7 +39,7 @@ public class Bike {
     }
 
     public void setBroken(boolean broken) {
-        isBroken = false ;
+        isBroken = broken ;
     }
 
     public String getBikeSize() {
