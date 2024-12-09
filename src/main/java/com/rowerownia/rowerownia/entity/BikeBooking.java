@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @Entity
-@Table
+@Table(name = "bikeBooking")
 public class BikeBooking {
     @Id
     @SequenceGenerator(

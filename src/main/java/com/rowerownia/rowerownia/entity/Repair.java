@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.*;
 
 @Entity
-@Table
+@Table(name = "repair")
 public class Repair {
     @Id
     @SequenceGenerator(
