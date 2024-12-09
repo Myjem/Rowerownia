@@ -24,7 +24,9 @@ public class BikeBooking {
             strategy = GenerationType.SEQUENCE,
             generator = "bikeBooking_sequence")
     private Integer bikeBookingId;
-    private Integer userId;
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
     private LocalDate bbookingDate;
     private LocalDate bstartDate;
     private LocalDate bendDate;
@@ -37,11 +39,11 @@ public class BikeBooking {
     public BikeBooking() {
     }
 
-    public BikeBooking(int i, LocalDate localDate, LocalDate date, LocalDate localDate1, Enums.status pending) {
+    public BikeBooking(User user, LocalDate localDate, LocalDate date, LocalDate localDate1, Enums.status pending) {
     }
 
     public BikeBooking(Integer userId, LocalDate bbookingDate, LocalDate bstartDate, LocalDate bendDate, Enums.status bikeStatus, List<Integer> bikeId) {
-        this.userId = userId;
+        this.user = user;
         this.bbookingDate = bbookingDate;
         this.bstartDate = bstartDate;
         this.bendDate = bendDate;
@@ -53,12 +55,12 @@ public class BikeBooking {
         return bikeBookingId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalDate getBbookingDate() {
@@ -105,7 +107,7 @@ public class BikeBooking {
     public String toString() {
         return "bikeBooking{" +
                 "bikeBookingId=" + bikeBookingId +
-                ", userId=" + userId +
+                ", userId=" + user +
                 ", bbookingDate=" + bbookingDate +
                 ", bstartDate=" + bstartDate +
                 ", bendDate=" + bendDate +
