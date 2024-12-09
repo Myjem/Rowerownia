@@ -21,13 +21,13 @@ public class Repair {
             generator = "repair_sequence")
     private Integer repairId;
     private String repairName;
-    private Integer repairTime;
+    private Double repairTime;
     private Integer repairPrice;
 
     public Repair() {
     }
 
-    public Repair(String repairName, Integer repairTime, Integer repairPrice) {
+    public Repair(String repairName, Double repairTime, Integer repairPrice) {
         this.repairName = repairName;
         this.repairTime = repairTime;
         this.repairPrice = repairPrice;
@@ -41,11 +41,11 @@ public class Repair {
         this.repairName = repairName;
     }
 
-    public Integer getRepairTime() {
+    public Double getRepairTime() {
         return repairTime;
     }
 
-    public void setRepairTime(Integer repairTime) {
+    public void setRepairTime(Double repairTime) {
         this.repairTime = repairTime;
     }
 
