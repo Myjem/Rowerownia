@@ -31,10 +31,12 @@ public class BikeBooking {
     private LocalDate bstartDate;
     private LocalDate bendDate;
     private Enums.status bikeStatus;
-    @ElementCollection
-    @CollectionTable(name = "bike_ids", joinColumns = @JoinColumn(name = "bikeBookingId"))
-    @Column(name = "bikeId")
-    private List<Integer> bikeId;
+    @ManyToMany
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "bikeBookingId"),
+            inverseJoinColumns = @JoinColumn(name = "bikeId")
+    )
+    private List<Bike> bikes;
 
     public BikeBooking() {
     }
@@ -48,7 +50,7 @@ public class BikeBooking {
         this.bstartDate = bstartDate;
         this.bendDate = bendDate;
         this.bikeStatus = bikeStatus;
-        this.bikeId = bikeId;
+        this.bikes = bikes;
     }
 
     public Integer getBikeBookingId() {
@@ -95,24 +97,24 @@ public class BikeBooking {
         this.bikeStatus = bikeStatus;
     }
 
-    public List<Integer> getBikeId() {
-        return bikeId;
+    public List<Bike> getBikes() {
+        return bikes;
     }
 
-    public void setBikeId(List<Integer> bikeId) {
-        this.bikeId = bikeId;
+    public void setBikes(List<Bike> bikes) {
+        this.bikes = bikes;
     }
 
     @Override
     public String toString() {
         return "bikeBooking{" +
                 "bikeBookingId=" + bikeBookingId +
-                ", userId=" + user +
+                ", user=" + user +
                 ", bbookingDate=" + bbookingDate +
                 ", bstartDate=" + bstartDate +
                 ", bendDate=" + bendDate +
                 ", bikeStatus=" + bikeStatus +
-                ", bikeId=" + bikeId +
+                ", bikes=" + bikes +
                 '}';
     }
 }
