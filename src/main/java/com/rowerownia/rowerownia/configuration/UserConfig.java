@@ -15,23 +15,23 @@ public class UserConfig  {
     @Bean
     CommandLineRunner usercommandLineRunner(UserRepository repository) {
         return args -> {
-            User defu = new User(
-                    "login",
+            User person = new User(
+                    "logg",
                     "pass",
-                    LocalDate.of(2000, 1, 1),
-                    "name",
-                    "surname"
+                    LocalDate.of(2000, 1, 2),
+                    "jan",
+                    "kowalski"
             );
-            User work = new User(
-                    "login2",
-                    "passssss",
+            User worker = new User(
+                    "worklog",
+                    "pass",
                     LocalDate.of(2010, 1, 1),
-                    "nameeee",
-                    "surnameeeee"
+                    "kuba",
+                    "nowak"
             );
 
             repository.saveAll(
-                    List.of(defu, work)
+                    List.of(person, worker)
             );
         };
     }
