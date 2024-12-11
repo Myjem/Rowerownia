@@ -1,6 +1,7 @@
 package com.rowerownia.rowerownia.controller;
 
 
+import com.rowerownia.rowerownia.DTO.UserDto;
 import com.rowerownia.rowerownia.entity.User;
 import com.rowerownia.rowerownia.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers() {
+    public List<UserDto> getUsers() {
         return userService.getUsers();
     }
 

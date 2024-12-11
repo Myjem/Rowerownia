@@ -1,5 +1,6 @@
 package com.rowerownia.rowerownia.configuration;
 
+import com.rowerownia.rowerownia.entity.Enums;
 import com.rowerownia.rowerownia.entity.User;
 import com.rowerownia.rowerownia.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -27,7 +28,8 @@ public class UserConfig  {
                     "pass",
                     LocalDate.of(2010, 1, 1),
                     "kuba",
-                    "nowak"
+                    "nowak",
+                    Enums.level.WORKER
             );
 
             repository.saveAll(

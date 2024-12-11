@@ -1,5 +1,7 @@
 package com.rowerownia.rowerownia.service;
 
+import com.rowerownia.rowerownia.DTO.UserDto;
+import com.rowerownia.rowerownia.dtomapper.UserDtoMapper;
 import com.rowerownia.rowerownia.entity.User;
 import com.rowerownia.rowerownia.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -9,19 +11,24 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserDtoMapper userDtoMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserDtoMapper userDtoMapper) {
         this.userRepository = userRepository;
+        this.userDtoMapper = userDtoMapper;
     }
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getUsers() {
+        return userRepository.findAll().
+                stream().
+                map(userDtoMapper).collect(Collectors.toList());
     }
 
     public  void addNewUser(User user) {

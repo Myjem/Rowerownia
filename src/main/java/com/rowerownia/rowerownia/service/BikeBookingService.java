@@ -1,15 +1,19 @@
 package com.rowerownia.rowerownia.service;
 
+import com.rowerownia.rowerownia.DTO.BikeBookingRequest;
 import com.rowerownia.rowerownia.entity.Bike;
 import com.rowerownia.rowerownia.entity.BikeBooking;
 import com.rowerownia.rowerownia.entity.Enums;
+import com.rowerownia.rowerownia.entity.User;
 import com.rowerownia.rowerownia.repository.BikeBookingRepository;
 import com.rowerownia.rowerownia.repository.BikeRepository;
+import com.rowerownia.rowerownia.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,11 +22,15 @@ public class BikeBookingService {
 
     private final BikeBookingRepository bikeBookingRepository;
     private final BikeService bikeService;
+    private final UserRepository userRepository;
+    private final BikeRepository bikeRepository;
 
     @Autowired
-    public BikeBookingService(BikeBookingRepository bikeBookingRepository, BikeService bikeService) {
+    public BikeBookingService(BikeBookingRepository bikeBookingRepository, BikeService bikeService, UserRepository userRepository, BikeRepository bikeRepository) {
         this.bikeBookingRepository = bikeBookingRepository;
         this.bikeService = bikeService;
+        this.userRepository = userRepository;
+        this.bikeRepository = bikeRepository;
     }
 
     public List<BikeBooking> getBikeBookings() {
@@ -30,7 +38,23 @@ public class BikeBookingService {
     }
 
     @Transactional
-    public void addNewBikeBooking(BikeBooking bikeBooking) {
+    public void addNewBikeBooking(BikeBookingRequest bikeBookingRequest) {
+        User user = userRepository.findById(bikeBookingRequest.getUserId())
+                .orElseThrow(() -> new IllegalStateException("User with id " + bikeBookingRequest.getUserId() + " does not exists"));
+
+        List<Bike> bikes = bikeBookingRequest.getBikeIds().stream()
+                .map(bikeId -> bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("Bike with id " + bikeId + " does not exists")))
+                .collect(Collectors.toList());
+
+        BikeBooking bikeBooking = new BikeBooking(
+                user,
+                LocalDate.parse(bikeBookingRequest.getBookingDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                LocalDate.parse(bikeBookingRequest.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                LocalDate.parse(bikeBookingRequest.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                Enums.status.PENDING,
+                bikes
+        );
+
         if(bikeBooking.getBbookingDate().isAfter(bikeBooking.getBstartDate()) || bikeBooking.getBstartDate().isAfter(bikeBooking.getBendDate()) || bikeBooking.getBbookingDate().isAfter(bikeBooking.getBendDate())) {
             throw new IllegalStateException("Invalid booking dates");
         }

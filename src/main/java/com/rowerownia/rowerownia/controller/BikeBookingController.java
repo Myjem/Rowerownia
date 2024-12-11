@@ -1,5 +1,6 @@
 package com.rowerownia.rowerownia.controller;
 
+import com.rowerownia.rowerownia.DTO.BikeBookingRequest;
 import com.rowerownia.rowerownia.entity.BikeBooking;
 import com.rowerownia.rowerownia.service.BikeBookingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,8 @@ public class BikeBookingController {
     }
 
     @PostMapping
-    public void addNewBikeBooking(@RequestBody BikeBooking bikeBooking) {
-        bikeBookingService.addNewBikeBooking(bikeBooking);
+    public void addNewBikeBooking(@RequestBody BikeBookingRequest bikeBookingRequest) {
+        bikeBookingService.addNewBikeBooking(bikeBookingRequest);
     }
 
     @PutMapping(path = "{bikeBookingId}/finish")
