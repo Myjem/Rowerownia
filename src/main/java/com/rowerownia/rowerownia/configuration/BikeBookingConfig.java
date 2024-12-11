@@ -24,7 +24,6 @@ public class BikeBookingConfig {
         return args -> {
             User user = userRepository.findUserByUserId(1);
             List<Bike> bikes = new ArrayList<Bike>();
-            bikes.add(bikeRepository.findBikeByBikeId(1));
             bikes.add(bikeRepository.findBikeByBikeId(2));
             BikeBooking bikeBooking = new BikeBooking(
                     user,

@@ -2,6 +2,9 @@ package com.rowerownia.rowerownia.service;
 
 
 import com.rowerownia.rowerownia.entity.Bike;
+import com.rowerownia.rowerownia.entity.BikeBooking;
+import com.rowerownia.rowerownia.entity.Enums;
+import com.rowerownia.rowerownia.repository.BikeBookingRepository;
 import com.rowerownia.rowerownia.repository.BikeRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +15,12 @@ import java.util.List;
 @Service
 public class BikeService {
     private final BikeRepository bikeRepository;
+    private final BikeBookingRepository bikeBookingRepository;
 
     @Autowired
-    public BikeService(BikeRepository bikeRepository) {
+    public BikeService(BikeRepository bikeRepository, BikeBookingRepository bikeBookingRepository) {
         this.bikeRepository = bikeRepository;
+        this.bikeBookingRepository = bikeBookingRepository;
     }
 
     public void addNewBike(Bike bike) {
@@ -27,10 +32,22 @@ public class BikeService {
         return bikeRepository.findAll();
     }
 
+    @Transactional
     public void deleteBike(Integer bikeId) {
         boolean exists = bikeRepository.existsById(bikeId);
         if(!exists){
             throw new IllegalStateException("bike with id " + bikeId + " does not exists");
+        }
+        List<BikeBooking> bikeBookings = bikeBookingRepository.findByBikes_BikeId(bikeId);
+        if(!bikeBookings.isEmpty()){
+            for (BikeBooking bikeBooking : bikeBookings) {
+                if(bikeBooking.getBikeStatus().equals(Enums.status.PENDING)){
+                    bikeBooking.setBikeStatus(Enums.status.DELETED);
+                }
+                bikeBooking.getBikes().remove(bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("bike with id 1 does not exists")));
+                bikeBooking.getBikes().add(bikeRepository.findById(1).orElseThrow(() -> new IllegalStateException("bike with id 1 does not exists")));
+                bikeBookingRepository.save(bikeBooking);
+            }
         }
         bikeRepository.deleteById(bikeId);
     }
@@ -60,6 +77,13 @@ public class BikeService {
     public void setStatus(Integer bikeId,boolean broken) {
         Bike bike = bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("bike with id " + bikeId + " does not exists"));
         bike.setBroken(broken);
+        List<BikeBooking> bikeBookings = bikeBookingRepository.findByBikes_BikeId(bikeId);
+        if(!bikeBookings.isEmpty()){
+            for (BikeBooking bikeBooking : bikeBookings) {
+                bikeBooking.setBikeStatus(Enums.status.DELETED);
+            }
+        }
+
     }
 
 

@@ -1,8 +1,11 @@
 package com.rowerownia.rowerownia.service;
 
+import com.rowerownia.rowerownia.DTO.BikeBookingRequest;
 import com.rowerownia.rowerownia.DTO.UserDto;
 import com.rowerownia.rowerownia.dtomapper.UserDtoMapper;
+import com.rowerownia.rowerownia.entity.BikeBooking;
 import com.rowerownia.rowerownia.entity.User;
+import com.rowerownia.rowerownia.repository.BikeBookingRepository;
 import com.rowerownia.rowerownia.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +21,13 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserDtoMapper userDtoMapper;
+    private final BikeBookingRepository bikeBookingRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserDtoMapper userDtoMapper) {
+    public UserService(UserRepository userRepository, UserDtoMapper userDtoMapper, BikeBookingRepository bikeBookingRepository) {
         this.userRepository = userRepository;
         this.userDtoMapper = userDtoMapper;
+        this.bikeBookingRepository = bikeBookingRepository;
     }
 
     public List<UserDto> getUsers() {
@@ -38,11 +43,17 @@ public class UserService {
         }
         userRepository.save(user);
     }
-
+    @Transactional
     public void deleteUser(Integer userId){
         boolean exists = userRepository.existsById(userId);
         if(!exists){
             throw new IllegalStateException("user with id " + userId + " does not exists");
+        }
+        List<BikeBooking> bikeBookings = bikeBookingRepository.findByUser_UserId(userId);
+        if(!bikeBookings.isEmpty()){
+            for (BikeBooking bikeBooking : bikeBookings) {
+                bikeBookingRepository.delete(bikeBooking);
+            }
         }
         userRepository.deleteById(userId);
     }
