@@ -23,13 +23,18 @@ public class BikeBooking {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "bikeBooking_sequence")
+    @Column(name = "bikeBookingId", updatable = false)
     private Integer bikeBookingId;
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
+    @Column(name = "bbookingDate", nullable = false)
     private LocalDate bbookingDate;
+    @Column(name = "bstartDate", nullable = false)
     private LocalDate bstartDate;
+    @Column(name = "bendDate", nullable = false)
     private LocalDate bendDate;
+    @Column(name = "bikeStatus", nullable = false)
     private Enums.status bikeStatus;
     @ManyToMany
     @JoinTable(

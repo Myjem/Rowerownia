@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RepairRepository
         extends JpaRepository<Repair,Integer> {
+   Repair findByRepairName(String repairName);
 }

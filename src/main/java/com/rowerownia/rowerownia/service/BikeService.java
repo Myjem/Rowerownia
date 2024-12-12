@@ -44,8 +44,8 @@ public class BikeService {
                 if(bikeBooking.getBikeStatus().equals(Enums.status.PENDING)){
                     bikeBooking.setBikeStatus(Enums.status.DELETED);
                 }
-                bikeBooking.getBikes().remove(bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("bike with id 1 does not exists")));
-                bikeBooking.getBikes().add(bikeRepository.findById(1).orElseThrow(() -> new IllegalStateException("bike with id 1 does not exists")));
+                bikeBooking.getBikes().remove(bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("bike does not exists")));
+                bikeBooking.getBikes().add(bikeRepository.findBikeByBikeName("deleted_Bike"));
                 bikeBookingRepository.save(bikeBooking);
             }
         }

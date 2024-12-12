@@ -22,9 +22,34 @@ public class BikeBookingConfig {
     @Bean
     CommandLineRunner bikeBookingCommandLineRunner(BikeBookingRepository repository, UserService userService, UserRepository userRepository, BikeRepository bikeRepository) {
         return args -> {
-            User user = userRepository.findUserByUserId(1);
+            User user = new User(
+                    "test",
+                    "pass_test",
+                    LocalDate.of(1999, 1, 1),
+                    "Tomek",
+                    "Testowy"
+            );
+            userRepository.save(user);
+            Bike t1 = new Bike(
+                    "city",
+                    "S",
+                    90,
+                    false
+            );
+            Bike t2 = new Bike(
+                    "road",
+                    "L",
+                    150,
+                    false
+            );
+            bikeRepository.saveAll(
+                    List.of(t1, t2)
+            );
+
+
             List<Bike> bikes = new ArrayList<Bike>();
-            bikes.add(bikeRepository.findBikeByBikeId(2));
+            bikes.add(t1);
+            bikes.add(t2);
             BikeBooking bikeBooking = new BikeBooking(
                     user,
                     LocalDate.of(2021, 5, 1),

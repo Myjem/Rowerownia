@@ -14,6 +14,12 @@ public class RepairConfig {
     @Bean
     CommandLineRunner repaircommandLineRunner(RepairRepository repository) {
         return args -> {
+            Repair del = new Repair(
+                    "deleted_Repair",
+                    0.0,
+                    0
+            );
+
             Repair repair1 = new Repair(
                    "cleaning",
                     0.5,
@@ -26,7 +32,7 @@ public class RepairConfig {
             );
 
             repository.saveAll(
-                    List.of(repair1, repair2)
+                    List.of(del, repair1, repair2)
             );
         };
     }

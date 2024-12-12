@@ -14,4 +14,6 @@ public interface BikeRepository
 
     Bike findBikeByBikeId(Integer bikeId);
 
+    Bike findBikeByBikeName(String bikeName);
+
 }

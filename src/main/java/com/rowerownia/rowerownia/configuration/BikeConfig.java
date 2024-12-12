@@ -13,9 +13,9 @@ public class BikeConfig {
     @Bean
     CommandLineRunner bikecommandLineRunner(BikeRepository repository) {
         return args -> {
-            Bike lost = new Bike(
-                    "deleted Bike",
-                    "none",
+            Bike del = new Bike(
+                    "deleted_Bike",
+                    "no",
                     0,
                     false
             );
@@ -27,7 +27,7 @@ public class BikeConfig {
             );
 
             repository.saveAll(
-                    List.of(lost, road)
+                    List.of(del, road)
             );
         };
     }

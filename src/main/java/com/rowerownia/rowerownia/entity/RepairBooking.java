@@ -20,32 +20,42 @@ public class RepairBooking {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "repairBooking_sequence")
+    @Column(name = "repairBookingId", updatable = false)
     private Integer repairBookingId;
-    private Integer userId;
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
+    @Column(name = "rbookingDate", nullable = false)
     private LocalDate rbookingDate;
+    @Column(name = "repairDate", nullable = false)
     private LocalDate repairDate;
+    @Column(name = "repairStatus", nullable = false)
     private Enums.status repairStatus;
+    @ManyToOne
+    @JoinColumn(name = "repairId")
+    private Repair repair;
 
     public RepairBooking() {
     }
 
-    public RepairBooking(Integer userId, LocalDate rbookingDate, LocalDate repairDate, Enums.status repairStatus) {
-        this.userId = userId;
+    public RepairBooking(User user, LocalDate rbookingDate, LocalDate repairDate, Enums.status repairStatus, Repair repair) {
+        this.user = user;
         this.rbookingDate = rbookingDate;
         this.repairDate = repairDate;
         this.repairStatus = repairStatus;
+        this.repair = repair;
     }
 
     public Integer getRepairBookingId() {
         return repairBookingId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalDate getRbookingDate() {
@@ -72,14 +82,23 @@ public class RepairBooking {
         this.repairStatus = repairStatus;
     }
 
+    public Repair getRepair() {
+        return repair;
+    }
+
+    public void setRepair(Repair repair) {
+        this.repair = repair;
+    }
+
     @Override
     public String toString() {
         return "repairBooking{" +
                 "repairBookingId=" + repairBookingId +
-                ", userId=" + userId +
+                ", user=" + user +
                 ", rbookingDate=" + rbookingDate +
                 ", repairDate=" + repairDate +
                 ", repairStatus=" + repairStatus +
+                ", repair=" + repair +
                 '}';
     }
 }

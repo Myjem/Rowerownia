@@ -1,6 +1,9 @@
 package com.rowerownia.rowerownia.service;
 
+import com.rowerownia.rowerownia.entity.Enums;
 import com.rowerownia.rowerownia.entity.Repair;
+import com.rowerownia.rowerownia.entity.RepairBooking;
+import com.rowerownia.rowerownia.repository.RepairBookingRepository;
 import com.rowerownia.rowerownia.repository.RepairRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +14,12 @@ import java.util.List;
 @Service
 public class RepairService {
     private final RepairRepository repairRepository;
+    private final RepairBookingRepository repairBookingRepository;
 
     @Autowired
-    public RepairService(RepairRepository repairRepository) {
+    public RepairService(RepairRepository repairRepository, RepairBookingRepository repairBookingRepository) {
         this.repairRepository = repairRepository;
+        this.repairBookingRepository = repairBookingRepository;
     }
 
     public void addNewRepair(Repair repair) {
@@ -29,6 +34,16 @@ public class RepairService {
         boolean exists = repairRepository.existsById(repairId);
         if(!exists){
             throw new IllegalStateException("repair with id " + repairId + " does not exists");
+        }
+        List<RepairBooking> repairBookings = repairBookingRepository.findByRepair_RepairId(repairId);
+        if(!repairBookings.isEmpty()){
+            for (RepairBooking repairBooking : repairBookings) {
+                if(repairBooking.getRepairStatus().equals(Enums.status.PENDING)){
+                    repairBooking.setRepairStatus(Enums.status.DELETED);
+                }
+                repairBooking.setRepair(repairRepository.findByRepairName("deleted_Repair"));
+                repairBookingRepository.save(repairBooking);
+            }
         }
         repairRepository.deleteById(repairId);
     }

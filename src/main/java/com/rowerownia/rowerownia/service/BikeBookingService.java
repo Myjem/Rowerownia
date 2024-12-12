@@ -75,7 +75,6 @@ public class BikeBookingService {
     @Transactional
     public void finishBooking(Integer bikeBookingId, List<Integer> brokenBikeIds) {
         BikeBooking bikeBooking = bikeBookingRepository.findById(bikeBookingId).orElseThrow(() -> new IllegalStateException("Booking with id " + bikeBookingId + " does not exists"));
-
         if (brokenBikeIds != null) {
             for (Integer bikeId : brokenBikeIds) {
                 bikeService.setStatus(bikeId, true);

@@ -18,10 +18,15 @@ public class Bike {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "bike_sequence")
+    @Column(name = "bikeId", updatable = false)
     private Integer bikeId;
+    @Column(name = "bikeName", nullable = false)
     private String bikeName;
+    @Column(name = "bikeSize", nullable = false, length = 2)
     private String bikeSize;
+    @Column(name = "bikePrice", nullable = false, length = 4)
     private Integer bikePrice;
+    @Column(name = "isBroken", nullable = false)
     private boolean isBroken;
 
     public Bike() {

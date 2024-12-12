@@ -19,9 +19,13 @@ public class Repair {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "repair_sequence")
+    @Column(name= "repairId" ,updatable = false)
     private Integer repairId;
+    @Column(name = "repairName", nullable = false)
     private String repairName;
+    @Column(name = "repairTime", nullable = false,length = 2,precision = 2)
     private Double repairTime;
+    @Column(name = "repairPrice", nullable = false,length = 4)
     private Integer repairPrice;
 
     public Repair() {

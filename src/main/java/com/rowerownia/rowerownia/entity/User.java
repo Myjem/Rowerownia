@@ -20,12 +20,19 @@ public class User {
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
             generator = "user_sequence")
+    @Column(updatable = false)
     private Integer userId;
+    @Column(name = "login", nullable = false)
     private String login;
+    @Column(name = "password", nullable = false)
     private String password;
+    @Column(name = "birthDate", nullable = false)
     private LocalDate birthDate;
+    @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "surname", nullable = false)
     private String surname;
+    @Column(name = "accessLevel", nullable = false)
     private Enums.level accessLevel= Enums.level.USER;
 
     public User() {

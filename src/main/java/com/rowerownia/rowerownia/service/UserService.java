@@ -4,8 +4,10 @@ import com.rowerownia.rowerownia.DTO.BikeBookingRequest;
 import com.rowerownia.rowerownia.DTO.UserDto;
 import com.rowerownia.rowerownia.dtomapper.UserDtoMapper;
 import com.rowerownia.rowerownia.entity.BikeBooking;
+import com.rowerownia.rowerownia.entity.RepairBooking;
 import com.rowerownia.rowerownia.entity.User;
 import com.rowerownia.rowerownia.repository.BikeBookingRepository;
+import com.rowerownia.rowerownia.repository.RepairBookingRepository;
 import com.rowerownia.rowerownia.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +24,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserDtoMapper userDtoMapper;
     private final BikeBookingRepository bikeBookingRepository;
+    private final RepairBookingRepository repairBookingRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserDtoMapper userDtoMapper, BikeBookingRepository bikeBookingRepository) {
+    public UserService(UserRepository userRepository, UserDtoMapper userDtoMapper, BikeBookingRepository bikeBookingRepository, RepairBookingRepository repairBookingRepository) {
         this.userRepository = userRepository;
         this.userDtoMapper = userDtoMapper;
         this.bikeBookingRepository = bikeBookingRepository;
+        this.repairBookingRepository = repairBookingRepository;
     }
 
     public List<UserDto> getUsers() {
@@ -53,6 +57,12 @@ public class UserService {
         if(!bikeBookings.isEmpty()){
             for (BikeBooking bikeBooking : bikeBookings) {
                 bikeBookingRepository.delete(bikeBooking);
+            }
+        }
+        List<RepairBooking> repairBookings = repairBookingRepository.findByUser_UserId(userId);
+        if(!repairBookings.isEmpty()){
+            for (RepairBooking repairBooking : repairBookings) {
+                repairBookingRepository.delete(repairBooking);
             }
         }
         userRepository.deleteById(userId);
