@@ -34,6 +34,14 @@ public class RepairBookingService {
         return repairBookingRepository.findAll();
     }
 
+    public List<RepairBooking> getRepairBookingsByUserId(Integer userId) {
+        return repairBookingRepository.findByUser_UserId(userId);
+    }
+
+    public List<RepairBooking> getPendingRepairBookings(Integer userId) {
+        return repairBookingRepository.findByUser_UserIdAndRepairStatus(userId, Enums.status.PENDING);
+    }
+
     @Transactional
     public void addNewRepairBooking(RepairBookingRequest repairBookingRequest) {
         User user = userRepository.findById(repairBookingRequest.getUserId())
@@ -41,6 +49,10 @@ public class RepairBookingService {
 
         Repair repair = repairRepository.findById(repairBookingRequest.getRepairId())
                 .orElseThrow(() -> new IllegalStateException("Repair with id " + repairBookingRequest.getRepairId() + " does not exists"));
+
+        if(repair.getRepairName().equals("deleted_repair")){
+            throw new IllegalStateException("You can't use this service");
+        }
 
         RepairBooking repairBooking = new RepairBooking(
                 user,

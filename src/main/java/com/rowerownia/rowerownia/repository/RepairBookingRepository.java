@@ -1,5 +1,6 @@
 package com.rowerownia.rowerownia.repository;
 
+import com.rowerownia.rowerownia.entity.Enums;
 import com.rowerownia.rowerownia.entity.RepairBooking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,5 +15,6 @@ public interface RepairBookingRepository
     List<RepairBooking> findByRepair_RepairId(Integer repairId);
     List<RepairBooking> findByUser_UserId(Integer userId);
     List<RepairBooking> findByRepairDate(LocalDate repairDate);
+    List<RepairBooking> findByUser_UserIdAndRepairStatus(Integer userId, Enums.status repairStatus);
 }
 

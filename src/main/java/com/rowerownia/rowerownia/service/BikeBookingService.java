@@ -37,6 +37,18 @@ public class BikeBookingService {
         return bikeBookingRepository.findAll();
     }
 
+    public List<BikeBooking> getBikeBookingsByUserId(Integer userId) {
+        return bikeBookingRepository.findByUser_UserId(userId);
+    }
+
+    public List<BikeBooking> getPendingBikeBookings(Integer userId) {
+        return bikeBookingRepository.findByUser_UserIdAndBikeStatus(userId, Enums.status.PENDING);
+    }
+
+    public Integer getBikeBookingCountByUserId(Integer userId) {
+        return bikeBookingRepository.findByUser_UserId(userId).size();
+    }
+
     @Transactional
     public void addNewBikeBooking(BikeBookingRequest bikeBookingRequest) {
         User user = userRepository.findById(bikeBookingRequest.getUserId())
@@ -45,6 +57,12 @@ public class BikeBookingService {
         List<Bike> bikes = bikeBookingRequest.getBikeIds().stream()
                 .map(bikeId -> bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("Bike with id " + bikeId + " does not exists")))
                 .collect(Collectors.toList());
+
+        for (Bike bike : bikes) {
+            if (bike.getBikeName().equals("deleted_bike")) {
+                throw new IllegalStateException("You can't use this bike");
+            }
+        }
 
         BikeBooking bikeBooking = new BikeBooking(
                 user,

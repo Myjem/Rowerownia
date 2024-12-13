@@ -4,7 +4,6 @@ import com.rowerownia.rowerownia.DTO.RepairBookingRequest;
 import com.rowerownia.rowerownia.entity.RepairBooking;
 import com.rowerownia.rowerownia.service.RepairBookingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +23,17 @@ public class RepairBookingController {
     public List<RepairBooking> getRepairBookings() {
     return repairBookingService.getRepairBookings();
     }
+
+    @GetMapping(path = "{userId}")
+    public List<RepairBooking> getRepairBookingsByUserId(@PathVariable("userId") Integer userId) {
+    return repairBookingService.getRepairBookingsByUserId(userId);
+    }
+
+    @GetMapping(path = "{userId}/pending")
+    public List<RepairBooking> getPendingRepairBookings(@PathVariable("userId") Integer userId) {
+    return repairBookingService.getPendingRepairBookings(userId);
+    }
+
 
     @PostMapping
     public void addNewRepairBooking(@RequestBody RepairBookingRequest repairBookingRequest) {

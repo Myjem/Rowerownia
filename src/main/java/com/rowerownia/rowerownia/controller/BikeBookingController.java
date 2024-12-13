@@ -24,6 +24,21 @@ public class BikeBookingController {
         return bikeBookingService.getBikeBookings();
     }
 
+    @GetMapping(path = "{userId}")
+    public List<BikeBooking> getBikeBookingsByUserId(@PathVariable("userId") Integer userId) {
+        return bikeBookingService.getBikeBookingsByUserId(userId);
+    }
+
+    @GetMapping(path = "{userId}/pending")
+    public List<BikeBooking> getPendingBikeBookings(@PathVariable("userId") Integer userId) {
+        return bikeBookingService.getPendingBikeBookings(userId);
+    }
+
+    @GetMapping(path = "{userId}/count")
+    public Integer getBikeBookingCountByUserId(@PathVariable("userId") Integer userId) {
+        return bikeBookingService.getBikeBookingCountByUserId(userId);
+    }
+
     @PostMapping
     public void addNewBikeBooking(@RequestBody BikeBookingRequest bikeBookingRequest) {
         bikeBookingService.addNewBikeBooking(bikeBookingRequest);
