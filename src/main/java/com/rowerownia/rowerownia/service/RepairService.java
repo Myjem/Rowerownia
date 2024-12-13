@@ -35,6 +35,13 @@ public class RepairService {
         if(!exists){
             throw new IllegalStateException("repair with id " + repairId + " does not exists");
         }
+
+        Repair repair = repairRepository.findById(repairId).orElseThrow(() -> new IllegalStateException("repair with id " + repairId + " does not exists"));
+        String repairName = repair.getRepairName();
+        if(repairName.equals("deleted_Repair")){
+            throw new IllegalStateException("You can't delete this repair");
+        }
+
         List<RepairBooking> repairBookings = repairBookingRepository.findByRepair_RepairId(repairId);
         if(!repairBookings.isEmpty()){
             for (RepairBooking repairBooking : repairBookings) {
@@ -53,7 +60,7 @@ public class RepairService {
         Repair repair = repairRepository.findById(repairId).orElseThrow(() -> new IllegalStateException("repair with id " + repairId + " does not exists"));
 
         if (repairName != null &&
-                repairName.length() > 0 &&
+                !repairName.isEmpty() &&
                 !repair.getRepairName().equals(repairName)){
             repair.setRepairName(repairName);
         }

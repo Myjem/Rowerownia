@@ -38,6 +38,14 @@ public class BikeService {
         if(!exists){
             throw new IllegalStateException("bike with id " + bikeId + " does not exists");
         }
+
+        Bike bike = bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("bike with id " + bikeId + " does not exists"));
+
+        String bikeName = bike.getBikeName();
+        if(bikeName.equals("deleted_Bike")){
+            throw new IllegalStateException("You can't delete this bike");
+        }
+
         List<BikeBooking> bikeBookings = bikeBookingRepository.findByBikes_BikeId(bikeId);
         if(!bikeBookings.isEmpty()){
             for (BikeBooking bikeBooking : bikeBookings) {
@@ -56,13 +64,13 @@ public class BikeService {
         Bike bike = bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("bike with id " + bikeId + " does not exists"));
 
         if (bikeName != null &&
-                bikeName.length() > 0 &&
+                !bikeName.isEmpty() &&
                 !bike.getBikeName().equals(bikeName)){
             bike.setBikeName(bikeName);
         }
 
         if (bikeSize != null &&
-                bikeSize.length() > 0 &&
+                !bikeSize.isEmpty() &&
                 !bike.getBikeSize().equals(bikeSize)){
             bike.setBikeSize(bikeSize);
         }

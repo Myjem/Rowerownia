@@ -15,19 +15,17 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class RepairBookingService {
     private final RepairBookingRepository repairBookingRepository;
-    private final RepairService repairService;
     private final UserRepository userRepository;
     private final RepairRepository repairRepository;
 
     @Autowired
-    public RepairBookingService(RepairBookingRepository repairBookingRepository, RepairService repairService, UserRepository userRepository, RepairRepository repairRepository) {
+    public RepairBookingService(RepairBookingRepository repairBookingRepository, UserRepository userRepository, RepairRepository repairRepository) {
         this.repairBookingRepository = repairBookingRepository;
-        this.repairService = repairService;
         this.userRepository = userRepository;
         this.repairRepository = repairRepository;
     }
@@ -68,16 +66,17 @@ public class RepairBookingService {
         repairBookingRepository.save(repairBooking);
     }
 
+    @Transactional
     public void finishBooking(Integer repairBookingId) {
         RepairBooking repairBooking =repairBookingRepository.findById(repairBookingId)
                 .orElseThrow(() -> new IllegalStateException("Repair booking with id " + repairBookingId + " does not exists"));
         repairBooking.setRepairStatus(Enums.status.FINISHED);
     }
-
+    @Transactional
     public void cancelBooking(Integer repairBookingId) {
         RepairBooking repairBooking =repairBookingRepository.findById(repairBookingId)
                 .orElseThrow(() -> new IllegalStateException("Repair booking with id " + repairBookingId + " does not exists"));
-        repairBookingRepository.deleteById(repairBookingId);
+        repairBooking.setRepairStatus(Enums.status.DELETED);
     }
 
 
