@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/v1/repairBooking")
+@RequestMapping(path = "api/v1")
 
 public class RepairBookingController {
     private final RepairBookingService repairBookingService;
@@ -19,32 +19,32 @@ public class RepairBookingController {
     this.repairBookingService = repairBookingService;
     }
 
-    @GetMapping
+    @GetMapping(path = "/auth/worker/repairBooking")
     public List<RepairBooking> getRepairBookings() {
     return repairBookingService.getRepairBookings();
     }
 
-    @GetMapping(path = "{userId}")
+    @GetMapping(path = "/auth/user/{userId}/repairBooking")
     public List<RepairBooking> getRepairBookingsByUserId(@PathVariable("userId") Integer userId) {
     return repairBookingService.getRepairBookingsByUserId(userId);
     }
 
-    @GetMapping(path = "{userId}/pending")
+    @GetMapping(path = "/auth/user/{userId}/repairBooking/pending")
     public List<RepairBooking> getPendingRepairBookings(@PathVariable("userId") Integer userId) {
     return repairBookingService.getPendingRepairBookings(userId);
     }
 
 
-    @PostMapping
+    @PostMapping(path = "/auth/repairBooking/add/{userId}")
     public void addNewRepairBooking(@RequestBody RepairBookingRequest repairBookingRequest) {
         repairBookingService.addNewRepairBooking(repairBookingRequest);
     }
-    @PutMapping(path = "{repairBookingId}/finish")
+    @PutMapping(path = "/auth/worker/repairBooking/finish/{repairBookingId}")
     public void finishBooking(
             @PathVariable("repairBookingId") Integer repairBookingId){
         repairBookingService.finishBooking(repairBookingId);
     }
-    @PutMapping(path = "{repairBookingId}/cancel")
+    @PutMapping(path = "/auth/user/repairBooking/cancel/{repairBookingId}")
     public void cancelBooking(
             @PathVariable("repairBookingId") Integer repairBookingId) {
         repairBookingService.cancelBooking(repairBookingId);

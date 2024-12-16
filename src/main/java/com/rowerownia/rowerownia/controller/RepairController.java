@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/v1/repair")
+@RequestMapping(path = "api/v1")
 public class RepairController {
     private final RepairService repairService;
 
@@ -18,22 +18,22 @@ public class RepairController {
         this.repairService = repairService;
     }
 
-    @GetMapping
+    @GetMapping(path="/repair")
     public List<Repair> getRepairs() {
         return repairService.getRepairs();
     }
 
-    @PostMapping
+    @PostMapping(path="/auth/worker/repair/add")
     public void addNewRepair(@RequestBody Repair repair) {
         repairService.addNewRepair(repair);
     }
 
-    @DeleteMapping(path="{repairId}")
+    @DeleteMapping(path="/auth/worker/repair/delete/{repairId}")
     public void deleteRepair(@PathVariable("repairId") Integer repairId) {
         repairService.deleteRepair(repairId);
     }
 
-    @PutMapping(path = "{repairId}")
+    @PutMapping(path = "/auth/worker/repair/update/{repairId}")
     public void updateRepair(
             @PathVariable("repairId") Integer repairId,
             @RequestParam(required = false) String repairName,

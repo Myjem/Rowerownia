@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/v1/bike")
+@RequestMapping(path = "api/v1")
 public class BikeController {
     private final BikeService bikeService;
 
@@ -18,22 +18,22 @@ public class BikeController {
         this.bikeService = bikeService;
     }
 
-    @GetMapping
+    @GetMapping(path="/bike")
     public List<Bike> getBikes() {
         return bikeService.getBikes();
     }
 
-    @PostMapping
+    @PostMapping(path="/auth/worker/bike/add")
     public void addNewBike(@RequestBody Bike bike) {
         bikeService.addNewBike(bike);
     }
 
-    @DeleteMapping(path="{bikeId}")
+    @DeleteMapping(path="/auth/worker/bike/delete/{bikeId}")
     public void deleteUser(@PathVariable("bikeId") Integer bikeId) {
         bikeService.deleteBike(bikeId);
     }
 
-    @PutMapping(path = "{bikeId}")
+    @PutMapping(path = "/auth/worker/bike/update/{bikeId}")
     public void updateBike(
             @PathVariable("bikeId") Integer bikeId,
             @RequestParam(required = false) String bikeName,
@@ -42,7 +42,7 @@ public class BikeController {
         bikeService.updateBike(bikeId, bikeName, bikeSize, bikePrice);
     }
 
-    @PutMapping(path = "{bikeId}/status")
+    @PutMapping(path = "/auth/worker/bike/set/{bikeId}")
     public void setStatus(
             @PathVariable("bikeId") Integer bikeId,
             @RequestParam(required = false) boolean broken) {
