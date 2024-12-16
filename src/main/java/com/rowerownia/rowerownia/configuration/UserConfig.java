@@ -6,6 +6,8 @@ import com.rowerownia.rowerownia.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,20 +17,21 @@ import java.util.List;
 public class UserConfig  {
     @Bean
     CommandLineRunner usercommandLineRunner(UserRepository repository) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return args -> {
             User person = new User(
                     "logg",
-                    "pass",
+                    passwordEncoder.encode("pass"),
                     LocalDate.of(2000, 1, 2),
                     "jan",
                     "kowalski"
             );
             User worker = new User(
-                    "worklog",
-                    "pass",
+                    "admin",
+                    passwordEncoder.encode("admin"),
                     LocalDate.of(2010, 1, 1),
-                    "kuba",
-                    "nowak",
+                    "ja",
+                    "sam",
                     Enums.level.WORKER
             );
 

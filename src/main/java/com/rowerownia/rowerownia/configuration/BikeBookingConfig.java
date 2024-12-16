@@ -12,6 +12,8 @@ import com.rowerownia.rowerownia.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,10 +23,11 @@ import java.util.List;
 public class BikeBookingConfig {
     @Bean
     CommandLineRunner bikeBookingCommandLineRunner(BikeBookingRepository repository, UserService userService, UserRepository userRepository, BikeRepository bikeRepository) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return args -> {
             User user = new User(
                     "test",
-                    "pass_test",
+                    passwordEncoder.encode("pass_test"),
                     LocalDate.of(1999, 1, 1),
                     "Tomek",
                     "Testowy"
