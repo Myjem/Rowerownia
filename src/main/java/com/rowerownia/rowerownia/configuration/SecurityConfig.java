@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,38 +25,50 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+        this.customUserDetailsService = customUserDetailsService;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
+   }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomUserDetailsService userDetailsService) throws Exception{
         http.authorizeHttpRequests(customizer ->
                 customizer
-                        .requestMatchers("api/v1/auth/worker/**").hasAuthority("WORKER")
-                        .requestMatchers("api/v1/auth/user/**").hasAnyAuthority("USER", "WORKER")
-                        .requestMatchers("api/v1/**").permitAll()
+                        .requestMatchers("/api/v1/auth/worker/**").hasAuthority("ROLE_WORKER")
+                        .requestMatchers("/api/v1/auth/user/**").hasAnyAuthority("ROLE_USER", "ROLE_WORKER")
+                        .requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers("/login","/logout","/home","/**").permitAll()
                         .anyRequest()
                         .authenticated()
         )
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(customizer -> customizer
-                        .loginPage("/api/v1/login")
+                        .loginPage("/login")
                         .successHandler(authenticationSuccessHandler(userDetailsService))
                         .failureHandler(authenticationFailureHandler(userDetailsService))
                         .permitAll()
-                        .defaultSuccessUrl("/api/v1/home", true)
-                        .failureUrl("/api/v1/login?error=true")
+                        .defaultSuccessUrl("/home", true)
+                        .failureUrl("/login?error=true")
                 )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
+                .authenticationProvider(daoAuthenticationProvider())
                 .sessionManagement(session -> session
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
-                        .expiredUrl("/api/v1/login")
+                        .expiredUrl("/login")
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/api/v1/logout")
-                        .logoutSuccessUrl("/api/v1/login")
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()
@@ -67,15 +81,15 @@ public class SecurityConfig {
     public AuthenticationSuccessHandler authenticationSuccessHandler(CustomUserDetailsService userDetailsService) {
         return ((request, response, authentication) -> {
             userDetailsService.handleSuccessfulLogin(authentication.getName());
-            response.sendRedirect("/api/v1/home");
+            response.sendRedirect("/home");
         });
     }
-
+//
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler(CustomUserDetailsService userDetailsService) {
         return ((request, response, exception) -> {
             userDetailsService.handleFailedLogin(request.getParameter("username"));
-            response.sendRedirect("/api/v1/login?error=true");
+            response.sendRedirect("/login?error=true");
         });
     }
 
@@ -86,15 +100,18 @@ public class SecurityConfig {
         return authenticationManagerBuilder.build();
     }
 
-
-
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser(User.builder()
-                        .username("admin")
-                        .password(passwordEncoder().encode("admin"))
-                        .roles("WORKER"));
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(new BCryptPasswordEncoder());
+        provider.setUserDetailsService(customUserDetailsService);
+        return provider;
     }
+
+
+
+
+
 
 
 }

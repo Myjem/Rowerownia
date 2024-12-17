@@ -4,6 +4,7 @@ import com.rowerownia.rowerownia.DTO.BikeBookingRequest;
 import com.rowerownia.rowerownia.DTO.UserDto;
 import com.rowerownia.rowerownia.dtomapper.UserDtoMapper;
 import com.rowerownia.rowerownia.entity.BikeBooking;
+import com.rowerownia.rowerownia.entity.Enums;
 import com.rowerownia.rowerownia.entity.RepairBooking;
 import com.rowerownia.rowerownia.entity.User;
 import com.rowerownia.rowerownia.repository.BikeBookingRepository;
@@ -13,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,7 +27,7 @@ public class UserService {
     private final UserDtoMapper userDtoMapper;
     private final BikeBookingRepository bikeBookingRepository;
     private final RepairBookingRepository repairBookingRepository;
-    public static final int MAX_FAILED_ATTEMPTS = 10;
+    public static final int MAX_FAILED_ATTEMPTS = 5;
 
     @Autowired
     public UserService(UserRepository userRepository, UserDtoMapper userDtoMapper, BikeBookingRepository bikeBookingRepository, RepairBookingRepository repairBookingRepository) {
@@ -102,6 +104,22 @@ public class UserService {
     public void unlockUser(Integer userId){
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("user with id " + userId + " does not exists"));
         user.setIsBlocked(false);
+        userRepository.save(user);
+    }
+
+    public Integer getFailedAttempts(Integer userId){
+        return userRepository.findUserByUserId(userId).getFailedLoginAttempts();
+    }
+
+    public boolean isBlocked(Integer userId){
+        return userRepository.findUserByUserId(userId).getIsBlocked();
+    }
+
+    public void accessLevel(Integer userId, String accessLevel){
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("user with id " + userId + " does not exists"));
+        if (accessLevel == "WORKER" && accessLevel == "USER"){
+            user.setAccessLevel(Enums.level.valueOf(accessLevel));
+        }
         userRepository.save(user);
     }
 

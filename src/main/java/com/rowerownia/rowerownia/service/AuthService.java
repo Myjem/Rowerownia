@@ -52,7 +52,7 @@ public class AuthService {
         if(passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             user.setFailedLoginAttempts(0);
             httpSession.setAttribute("userId", user.getUserId());
-            httpSession.setMaxInactiveInterval(15*60);
+            httpSession.setMaxInactiveInterval(1*60);
         } else {
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
             if(user.getFailedLoginAttempts() >= userService.MAX_FAILED_ATTEMPTS) {
@@ -63,5 +63,7 @@ public class AuthService {
         userRepository.save(user);
         return user;
     }
+
+
 }
 

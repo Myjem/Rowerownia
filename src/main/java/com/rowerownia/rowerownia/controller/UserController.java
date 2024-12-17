@@ -54,5 +54,20 @@ public class UserController {
         userService.unlockUser(userId);
     }
 
+    @GetMapping(path = "/worker/user/{userId}/block")
+    public void blockUser(@PathVariable("userId") Integer userId) {
+        userService.isBlocked(userId);
+    }
+
+    @GetMapping(path = "/worker/user/{userId}/fail")
+    public Integer failUser(@PathVariable("userId") Integer userId) {
+        return userService.getFailedAttempts(userId);
+    }
+
+    @PutMapping(path = "/worker/user/{userId}/{accessLevel}")
+    public void changeAccessLevel(@PathVariable("userId") Integer userId, @PathVariable("accessLevel") String accessLevel) {
+        userService.accessLevel(userId, accessLevel);
+    }
+
 
 }

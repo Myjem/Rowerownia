@@ -9,21 +9,21 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private UserService userService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findUserByLogin(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        if(user.getIsBlocked()) {
-            throw new UsernameNotFoundException("User blocked");
-        }
+        Optional<User> useropt = userRepository.findUserByLogin(username);
+        User user = useropt.get();
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getLogin())
                 .password(user.getPassword())
@@ -32,13 +32,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     public void handleFailedLogin(String username) {
-        User user = userRepository.findUserByLogin(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Optional<User> useropt = userRepository.findUserByLogin(username);
+        User user = useropt.get();
         userService.plusFailedAttempts(user);
         System.out.println("User " + username + " failed to log in.");
     }
 
     public void handleSuccessfulLogin(String username) {
-        User user = userRepository.findUserByLogin(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        Optional<User> useropt = userRepository.findUserByLogin(username);
+        User user = useropt.get();
         userService.resetFailedAttempts(user);
         System.out.println("User " + username + " logged in successfully.");
 

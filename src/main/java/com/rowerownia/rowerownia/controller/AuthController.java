@@ -36,13 +36,14 @@ public class AuthController {
     @PostMapping(path = "/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         User loginUser=authService.login(loginRequest);
-        if(passwordEncoder.matches(loginRequest.getPassword(), loginUser.getPassword())) {
-            return ResponseEntity.ok("Login successful");
+        if(loginUser==null){
+            return ResponseEntity.badRequest().body("User not found");
         }
-        else {
-            return ResponseEntity.badRequest().body("Invalid password");
+        else{
+            return ResponseEntity.ok(loginUser);
         }
     }
+
 
 
 }
