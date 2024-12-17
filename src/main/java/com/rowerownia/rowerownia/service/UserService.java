@@ -25,6 +25,7 @@ public class UserService {
     private final UserDtoMapper userDtoMapper;
     private final BikeBookingRepository bikeBookingRepository;
     private final RepairBookingRepository repairBookingRepository;
+    public static final int MAX_FAILED_ATTEMPTS = 10;
 
     @Autowired
     public UserService(UserRepository userRepository, UserDtoMapper userDtoMapper, BikeBookingRepository bikeBookingRepository, RepairBookingRepository repairBookingRepository) {
@@ -82,6 +83,26 @@ public class UserService {
                 !Objects.equals(user.getSurname(),surname)){
             user.setSurname(surname);
         }
+    }
+
+    public void plusFailedAttempts(User user){
+        int newAttepts = user.getFailedLoginAttempts() + 1;
+        user.setFailedLoginAttempts(newAttepts);
+        if(newAttepts>=MAX_FAILED_ATTEMPTS){
+            user.setIsBlocked(true);
+        }
+        userRepository.save(user);
+    }
+
+    public void resetFailedAttempts(User user){
+        user.setFailedLoginAttempts(0);
+        userRepository.save(user);
+    }
+
+    public void unlockUser(Integer userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("user with id " + userId + " does not exists"));
+        user.setIsBlocked(false);
+        userRepository.save(user);
     }
 
 

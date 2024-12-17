@@ -3,6 +3,7 @@ package com.rowerownia.rowerownia.controller;
 
 import com.rowerownia.rowerownia.DTO.UserDto;
 import com.rowerownia.rowerownia.entity.User;
+import com.rowerownia.rowerownia.repository.UserRepository;
 import com.rowerownia.rowerownia.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +19,12 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping(path="/worker/user/all")
@@ -29,7 +32,7 @@ public class UserController {
         return userService.getUsers();
     }
 
-    @PostMapping
+    @PostMapping(path="/worker/user/add")
     public void addNewUser(@RequestBody User user) {
         userService.addNewUser(user);
     }
@@ -46,4 +49,10 @@ public class UserController {
             @RequestParam(required = false) String surname) {
         userService.updateUser(userId, name, surname);
     }
+    @PutMapping(path = "/worker/unblock/{userId}")
+    public void unblockUser(@PathVariable("userId") Integer userId) {
+        userService.unlockUser(userId);
+    }
+
+
 }

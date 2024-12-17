@@ -39,7 +39,7 @@ public class BikeBookingController {
         return bikeBookingService.getBikeBookingCountByUserId(userId);
     }
 
-    @PostMapping(path = "/auth/bikeBooking/add/{userId}")
+    @PostMapping(path = "/auth/user/bikeBooking/add/{userId}")
     public void addNewBikeBooking(@RequestBody BikeBookingRequest bikeBookingRequest) {
         bikeBookingService.addNewBikeBooking(bikeBookingRequest);
     }

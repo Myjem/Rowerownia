@@ -34,6 +34,8 @@ public class User {
     private String surname;
     @Column(name = "accessLevel", nullable = false)
     private Enums.level accessLevel= Enums.level.USER;
+    private int failedLoginAttempts = 0;
+    private boolean isBlocked = false;
 
     public User() {
     }
@@ -45,6 +47,8 @@ public class User {
         this.name = name;
         this.surname = surname;
         this.accessLevel = Enums.level.USER;
+        this.failedLoginAttempts = 0;
+        this.isBlocked = false;
     }
 
     public User(String login, String password, LocalDate birthDate, String name, String surname, Enums.level accessLevel) {
@@ -54,6 +58,8 @@ public class User {
         this.name = name;
         this.surname = surname;
         this.accessLevel = accessLevel;
+        this.failedLoginAttempts = 0;
+        this.isBlocked = false;
     }
 
     public Integer getUserId() {
@@ -108,12 +114,27 @@ public class User {
         this.surname = surname;
     }
 
+    public int getFailedLoginAttempts(){
+        return failedLoginAttempts;
+    }
+
+    public void setFailedLoginAttempts(int failedLoginAttempts){
+        this.failedLoginAttempts = failedLoginAttempts;
+    }
+
+    public boolean getIsBlocked(){
+        return isBlocked;
+    }
+
+    public void setIsBlocked(boolean isBlocked){
+        this.isBlocked = isBlocked;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "userId=" + userId +
                 ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
                 ", birthDate=" + birthDate +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +

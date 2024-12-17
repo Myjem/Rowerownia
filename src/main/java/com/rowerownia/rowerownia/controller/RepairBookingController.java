@@ -35,7 +35,7 @@ public class RepairBookingController {
     }
 
 
-    @PostMapping(path = "/auth/repairBooking/add/{userId}")
+    @PostMapping(path = "/auth/user/repairBooking/add/{userId}")
     public void addNewRepairBooking(@RequestBody RepairBookingRequest repairBookingRequest) {
         repairBookingService.addNewRepairBooking(repairBookingRequest);
     }
