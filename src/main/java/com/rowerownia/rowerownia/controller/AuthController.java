@@ -5,6 +5,7 @@ import com.rowerownia.rowerownia.DTO.RegisterRequest;
 import com.rowerownia.rowerownia.entity.User;
 import com.rowerownia.rowerownia.repository.UserRepository;
 import com.rowerownia.rowerownia.service.AuthService;
+import com.rowerownia.rowerownia.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,29 +22,31 @@ public class AuthController {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserService userService;
 
     @PostMapping(path = "/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
         User registerUser = authService.register(registerRequest);
-        if(registerUser == null) {
+        if (registerUser == null) {
             return ResponseEntity.badRequest().body("User already exists");
-        }
-        else {
+        } else {
             return ResponseEntity.ok(registerUser);
         }
     }
 
-//    @PostMapping(path = "/login")
-//    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-//        User loginUser=authService.login(loginRequest);
-//        if(loginUser==null){
-//            return ResponseEntity.badRequest().body("User not found");
-//        }
-//        else{
-//            return ResponseEntity.ok(loginUser);
-//        }
-//    }
-
-
-
+    @GetMapping("/login")
+    public String login(@RequestParam(value = "session", required = false) String sessionStatus) {
+        if ("expired".equals(sessionStatus)) {
+            return "Your session has expired. Please log in again.";
+        }
+        if ("invalid".equals(sessionStatus)) {
+            return "Your session is invalid. Please log in again.";
+        }
+        return "Login page";
+    }
+    @GetMapping("/logout")
+    public String logoutPage() {
+        return "You have been successfully logged out.";
+    }
 }

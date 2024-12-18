@@ -23,4 +23,9 @@ public class ContentController {
         System.out.println("ContentController.getLogin -> login");
         return "login";
     }
+    @GetMapping("/logout")
+    public String getLogout() {
+        System.out.println("ContentController.getLogout -> logout");
+        return "logout";
+    }
 }

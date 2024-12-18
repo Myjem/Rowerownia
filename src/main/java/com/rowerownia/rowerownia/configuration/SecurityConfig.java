@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,41 +39,34 @@ public class SecurityConfig {
    }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomUserDetailsService userDetailsService) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println("Initializing SecurityFilterChain...");
+
         http.authorizeHttpRequests(customizer ->
-                customizer
-                        .requestMatchers("/api/v1/auth/worker/**").permitAll()
-                        .requestMatchers("/api/v1/auth/user/**").permitAll()
-                        .requestMatchers("/api/v1/**").permitAll()
-                        .requestMatchers("/login","/logout","/home","/**").permitAll()
-                        .anyRequest()
-                        .authenticated()
-        )
+                        customizer
+                                .requestMatchers("/login", "/logout","/**", "/home", "/api/v1/**").permitAll()
+                                .anyRequest().authenticated()
+                )
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(customizer -> customizer
                         .loginPage("/login")
-                        .successHandler(authenticationSuccessHandler(userDetailsService))
-                        .failureHandler(authenticationFailureHandler(userDetailsService))
-                        .permitAll()
-                        .defaultSuccessUrl("/home", true)
-                        .failureUrl("/login?error=true")
+                        .successHandler(authenticationSuccessHandler(customUserDetailsService))
+                        .failureHandler(authenticationFailureHandler(customUserDetailsService))
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Sesja wymagana
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
                         .expiredUrl("/login")
                 )
-                .authenticationProvider(daoAuthenticationProvider())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")
+                        .logoutSuccessUrl("/logout")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .permitAll()
                 );
-        return http.build();
 
+        return http.build();
     }
 
     @Bean
@@ -82,14 +76,22 @@ public class SecurityConfig {
             response.sendRedirect("/home");
         });
     }
-//
+
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler(CustomUserDetailsService userDetailsService) {
         return ((request, response, exception) -> {
-            userDetailsService.handleFailedLogin(request.getParameter("username"));
+            String username = request.getParameter("username");
+
+            if (exception instanceof LockedException) {
+                System.out.println("User account is locked.");
+            } else {
+                userDetailsService.handleFailedLogin(username);
+            }
+
             response.sendRedirect("/login?error=true");
         });
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder, CustomUserDetailsService userDetailsService) throws Exception {
@@ -98,18 +100,13 @@ public class SecurityConfig {
         return authenticationManagerBuilder.build();
     }
 
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder());
-        provider.setUserDetailsService(customUserDetailsService);
-        return provider;
-    }
-
-
-
-
-
+//    @Bean
+//    public DaoAuthenticationProvider daoAuthenticationProvider() {
+//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//        provider.setPasswordEncoder(new BCryptPasswordEncoder());
+//        provider.setUserDetailsService(customUserDetailsService);
+//        return provider;
+//    }
 
 
 }
