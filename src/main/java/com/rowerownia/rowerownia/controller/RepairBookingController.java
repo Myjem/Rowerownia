@@ -19,35 +19,51 @@ public class RepairBookingController {
     this.repairBookingService = repairBookingService;
     }
 
+    @PutMapping(path = "/auth/user/me/repairBooking/{repairBookingId}/cancel")
+    public void cancelUserRepairBooking(
+            @PathVariable("repairBookingId") Integer repairBookingId) {
+        repairBookingService.cancelUserRepairBooking(repairBookingId);
+    }
+    @GetMapping(path = "/auth/user/me/repairBooking")
+    public List<RepairBooking> getUserRepairBookings() {
+        return repairBookingService.getUserRepairBookings();
+    }
+    @GetMapping(path = "/auth/user/me/repairBooking/pending")
+    public List<RepairBooking> getPendingUserRepairBookings() {
+    return repairBookingService.getPendingUserRepairBookings();
+    }
+    @PostMapping(path = "/auth/user/me/repairBooking/add")
+    public void addNewUserRepairBooking(@RequestBody RepairBookingRequest repairBookingRequest) {
+        repairBookingService.addNewUserRepairBooking(repairBookingRequest);
+    }
+
+
+
+
+
+    @GetMapping(path = "/auth/worker/user/{userId}/repairBooking")
+    public List<RepairBooking> getRepairBookingsByUserId(@PathVariable("userId") Integer userId) {
+        return repairBookingService.getRepairBookingsByUserId(userId);
+    }
+    @GetMapping(path = "/auth/worker/repairBooking/{repairBookingId}")
+    public RepairBooking getRepairBookingByrepairBookingId(@PathVariable("repairBookingId") Integer repairBookingId) {
+        return repairBookingService.getRepairBookingByrepairBookingId(repairBookingId);
+    }
     @GetMapping(path = "/auth/worker/repairBooking")
     public List<RepairBooking> getRepairBookings() {
-    return repairBookingService.getRepairBookings();
+        return repairBookingService.getRepairBookings();
     }
 
-    @GetMapping(path = "/auth/user/{userId}/repairBooking")
-    public List<RepairBooking> getRepairBookingsByUserId(@PathVariable("userId") Integer userId) {
-    return repairBookingService.getRepairBookingsByUserId(userId);
-    }
-
-    @GetMapping(path = "/auth/user/{userId}/repairBooking/pending")
-    public List<RepairBooking> getPendingRepairBookings(@PathVariable("userId") Integer userId) {
-    return repairBookingService.getPendingRepairBookings(userId);
-    }
-
-
-    @PostMapping(path = "/auth/user/repairBooking/add/{userId}")
-    public void addNewRepairBooking(@RequestBody RepairBookingRequest repairBookingRequest) {
-        repairBookingService.addNewRepairBooking(repairBookingRequest);
-    }
-    @PutMapping(path = "/auth/worker/repairBooking/finish/{repairBookingId}")
-    public void finishBooking(
+    @PutMapping(path = "/auth/worker/repairBooking/{repairBookingId}/finish")
+    public void finishRepairBooking(
             @PathVariable("repairBookingId") Integer repairBookingId){
-        repairBookingService.finishBooking(repairBookingId);
+        repairBookingService.finishRepairBooking(repairBookingId);
     }
-    @PutMapping(path = "/auth/user/repairBooking/cancel/{repairBookingId}")
-    public void cancelBooking(
+
+    @PutMapping(path = "/auth/worker/repairBooking/{repairBookingId}/cancel")
+    public void cancelRepairBooking(
             @PathVariable("repairBookingId") Integer repairBookingId) {
-        repairBookingService.cancelBooking(repairBookingId);
+        repairBookingService.cancelRepairBooking(repairBookingId);
     }
 
 }

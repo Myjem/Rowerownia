@@ -12,6 +12,8 @@ import com.rowerownia.rowerownia.repository.RepairBookingRepository;
 import com.rowerownia.rowerownia.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,6 +37,47 @@ public class UserService {
         this.userDtoMapper = userDtoMapper;
         this.bikeBookingRepository = bikeBookingRepository;
         this.repairBookingRepository = repairBookingRepository;
+    }
+
+    private Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    public UserDto getLoggedUser(){
+        User currentUser = (User) getAuthentication().getPrincipal();
+        return new UserDto(currentUser.getUserId(), currentUser.getLogin(),currentUser.getBirthDate().toString(), currentUser.getName(), currentUser.getSurname());
+    }
+
+
+    public void updateLoggedUser(String name, String surname){
+        User user = (User) getAuthentication().getPrincipal();
+        if (name != null &&
+                name.length() > 0 &&
+                !Objects.equals(user.getName(),name)){
+            user.setName(name);
+        }
+        if (surname != null &&
+                surname.length() > 0 &&
+                !Objects.equals(user.getSurname(),surname)){
+            user.setSurname(surname);
+        }
+    }
+    @Transactional
+    public void deleteLoggedUser(){
+        User user = (User) getAuthentication().getPrincipal();
+        List<BikeBooking> bikeBookings = bikeBookingRepository.findByUser_UserId(user.getUserId());
+        if(!bikeBookings.isEmpty()){
+            for (BikeBooking bikeBooking : bikeBookings) {
+                bikeBookingRepository.delete(bikeBooking);
+            }
+        }
+        List<RepairBooking> repairBookings = repairBookingRepository.findByUser_UserId(user.getUserId());
+        if(!repairBookings.isEmpty()){
+            for (RepairBooking repairBooking : repairBookings) {
+                repairBookingRepository.delete(repairBooking);
+            }
+        }
+        userRepository.deleteById(user.getUserId());
     }
 
     public List<UserDto> getUsers() {

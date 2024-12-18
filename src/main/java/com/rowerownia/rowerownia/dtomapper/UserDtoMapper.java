@@ -12,14 +12,9 @@ public class UserDtoMapper implements Function<User, UserDto> {
         return new UserDto(
                 user.getUserId(),
                 user.getLogin(),
-                user.getPassword(),
                 user.getBirthDate().toString(),
                 user.getName(),
-                user.getSurname(),
-                user.getAccessLevel().name(),
-                user.getFailedLoginAttempts(),
-                user.getIsBlocked()
-
+                user.getSurname()
         );
     }
 }

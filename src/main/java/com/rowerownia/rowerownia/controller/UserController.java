@@ -27,6 +27,31 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+    @GetMapping(path="/user/me")
+    public UserDto getLoggedUser() {
+        return userService.getLoggedUser();
+    }
+
+    @PutMapping(path="/user/me/update")
+    public void updateLoggedUser(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String surname) {
+        userService.updateLoggedUser(name, surname);
+    }
+
+    @DeleteMapping(path="/user/me/delete")
+    public void deleteLoggedUser() {
+        userService.deleteLoggedUser();
+    }
+
+    @PutMapping(path = "/worker/user/{userId}/update")
+    public void updateUser(
+            @PathVariable("userId") Integer userId,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String surname) {
+        userService.updateUser(userId, name, surname);
+    }
+
     @GetMapping(path="/worker/user/all")
     public List<UserDto> getUsers() {
         return userService.getUsers();
@@ -37,18 +62,11 @@ public class UserController {
         userService.addNewUser(user);
     }
 
-    @DeleteMapping(path="/user/{userId}/delete")
+    @DeleteMapping(path="/worker/user/{userId}/delete")
     public void deleteUser(@PathVariable("userId") Integer userId) {
         userService.deleteUser(userId);
     }
 
-    @PutMapping(path = "/user/{userId}/update")
-    public void updateUser(
-            @PathVariable("userId") Integer userId,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String surname) {
-        userService.updateUser(userId, name, surname);
-    }
     @PutMapping(path = "/worker/unblock/{userId}")
     public void unblockUser(@PathVariable("userId") Integer userId) {
         userService.unlockUser(userId);
