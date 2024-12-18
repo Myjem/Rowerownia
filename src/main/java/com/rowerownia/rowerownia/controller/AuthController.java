@@ -33,16 +33,16 @@ public class AuthController {
         }
     }
 
-    @PostMapping(path = "/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        User loginUser=authService.login(loginRequest);
-        if(loginUser==null){
-            return ResponseEntity.badRequest().body("User not found");
-        }
-        else{
-            return ResponseEntity.ok(loginUser);
-        }
-    }
+//    @PostMapping(path = "/login")
+//    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+//        User loginUser=authService.login(loginRequest);
+//        if(loginUser==null){
+//            return ResponseEntity.badRequest().body("User not found");
+//        }
+//        else{
+//            return ResponseEntity.ok(loginUser);
+//        }
+//    }
 
 
 

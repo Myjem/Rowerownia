@@ -50,6 +50,9 @@ public class UserService {
         }
         userRepository.save(user);
     }
+
+
+
     @Transactional
     public void deleteUser(Integer userId){
         boolean exists = userRepository.existsById(userId);
@@ -88,9 +91,9 @@ public class UserService {
     }
 
     public void plusFailedAttempts(User user){
-        int newAttepts = user.getFailedLoginAttempts() + 1;
-        user.setFailedLoginAttempts(newAttepts);
-        if(newAttepts>=MAX_FAILED_ATTEMPTS){
+        int newAttempts = user.getFailedLoginAttempts() + 1;
+        user.setFailedLoginAttempts(newAttempts);
+        if(newAttempts >= MAX_FAILED_ATTEMPTS){
             user.setIsBlocked(true);
         }
         userRepository.save(user);
@@ -108,16 +111,24 @@ public class UserService {
     }
 
     public Integer getFailedAttempts(Integer userId){
-        return userRepository.findUserByUserId(userId).getFailedLoginAttempts();
+        User user = userRepository.findUserByUserId(userId);
+        if (user == null) {
+            throw new IllegalStateException("User with id " + userId + " does not exist");
+        }
+        return user.getFailedLoginAttempts();
     }
 
     public boolean isBlocked(Integer userId){
-        return userRepository.findUserByUserId(userId).getIsBlocked();
+        User user = userRepository.findUserByUserId(userId);
+        if (user == null) {
+            throw new IllegalStateException("User with id " + userId + " does not exist");
+        }
+        return user.getIsBlocked();
     }
 
     public void accessLevel(Integer userId, String accessLevel){
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("user with id " + userId + " does not exists"));
-        if (accessLevel == "WORKER" && accessLevel == "USER"){
+        if (accessLevel.equals( "WORKER") || accessLevel.equals("USER")){
             user.setAccessLevel(Enums.level.valueOf(accessLevel));
         }
         userRepository.save(user);

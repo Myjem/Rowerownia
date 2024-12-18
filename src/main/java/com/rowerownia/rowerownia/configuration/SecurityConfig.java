@@ -41,8 +41,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomUserDetailsService userDetailsService) throws Exception{
         http.authorizeHttpRequests(customizer ->
                 customizer
-                        .requestMatchers("/api/v1/auth/worker/**").hasAuthority("ROLE_WORKER")
-                        .requestMatchers("/api/v1/auth/user/**").hasAnyAuthority("ROLE_USER", "ROLE_WORKER")
+                        .requestMatchers("/api/v1/auth/worker/**").permitAll()
+                        .requestMatchers("/api/v1/auth/user/**").permitAll()
                         .requestMatchers("/api/v1/**").permitAll()
                         .requestMatchers("/login","/logout","/home","/**").permitAll()
                         .anyRequest()
@@ -59,13 +59,11 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                )
-                .authenticationProvider(daoAuthenticationProvider())
-                .sessionManagement(session -> session
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
                         .expiredUrl("/login")
                 )
+                .authenticationProvider(daoAuthenticationProvider())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login")

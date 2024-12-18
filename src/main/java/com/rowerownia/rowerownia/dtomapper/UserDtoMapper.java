@@ -16,7 +16,10 @@ public class UserDtoMapper implements Function<User, UserDto> {
                 user.getBirthDate().toString(),
                 user.getName(),
                 user.getSurname(),
-                user.getAccessLevel().name()
+                user.getAccessLevel().name(),
+                user.getFailedLoginAttempts(),
+                user.getIsBlocked()
+
         );
     }
 }

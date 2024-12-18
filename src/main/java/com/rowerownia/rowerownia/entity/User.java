@@ -34,7 +34,9 @@ public class User {
     private String surname;
     @Column(name = "accessLevel", nullable = false)
     private Enums.level accessLevel= Enums.level.USER;
+    @Column(name = "failedLoginAttempts", nullable = false)
     private int failedLoginAttempts = 0;
+    @Column(name = "isBlocked", nullable = false)
     private boolean isBlocked = false;
 
     public User() {
@@ -139,6 +141,8 @@ public class User {
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", accessLevel='" + accessLevel + '\'' +
+                ", failedLoginAttempts=" + failedLoginAttempts + '\'' +
+                ", isBlocked=" + isBlocked + '\'' +
                 '}';
     }
 }

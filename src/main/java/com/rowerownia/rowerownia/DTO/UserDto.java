@@ -11,5 +11,7 @@ public record UserDto(
         String birthDate,
         String name,
         String surname,
-        String accessLevel
+        String accessLevel,
+        Integer attempt,
+        Boolean isBlocked
 ) { }

@@ -55,12 +55,12 @@ public class UserController {
     }
 
     @GetMapping(path = "/worker/user/{userId}/block")
-    public void blockUser(@PathVariable("userId") Integer userId) {
-        userService.isBlocked(userId);
+    public boolean isBlocked(@PathVariable("userId") Integer userId) {
+        return userService.isBlocked(userId);
     }
 
     @GetMapping(path = "/worker/user/{userId}/fail")
-    public Integer failUser(@PathVariable("userId") Integer userId) {
+    public Integer getFailedAttempts(@PathVariable("userId") Integer userId) {
         return userService.getFailedAttempts(userId);
     }
 
