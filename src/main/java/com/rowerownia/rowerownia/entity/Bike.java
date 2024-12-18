@@ -5,6 +5,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 @Table(name = "bike")
@@ -25,6 +26,7 @@ public class Bike {
     @Column(name = "bikeSize", nullable = false, length = 2)
     private String bikeSize;
     @Column(name = "bikePrice", nullable = false, length = 4)
+    @PositiveOrZero(message = "Price must be positive or zero")
     private Integer bikePrice;
     @Column(name = "isBroken", nullable = false)
     private boolean isBroken;

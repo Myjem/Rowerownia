@@ -2,6 +2,7 @@ package com.rowerownia.rowerownia.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class ContentController {
@@ -23,7 +24,7 @@ public class ContentController {
         System.out.println("ContentController.getLogin -> login");
         return "login";
     }
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public String getLogout() {
         System.out.println("ContentController.getLogout -> logout");
         return "logout";

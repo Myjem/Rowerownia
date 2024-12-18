@@ -40,29 +40,7 @@ public class AuthService {
         return userRepository.save(user);
 
     }
-//    public User login(LoginRequest loginRequest) {
-//        Optional<User> useropt = userRepository.findUserByLogin(loginRequest.getLogin());
-//        if (useropt.isEmpty()) {
-//            throw new IllegalArgumentException("User not found");
-//        }
-//        User user = useropt.get();
-//        if (user.getIsBlocked()) {
-//            throw new IllegalArgumentException("User blocked");
-//        }
-//        if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-//            user.setFailedLoginAttempts(0);
-//            httpSession.setAttribute("userId", user.getUserId());
-//            httpSession.setMaxInactiveInterval(1 * 60);
-//        } else {
-//            user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
-//            if (user.getFailedLoginAttempts() >= userService.MAX_FAILED_ATTEMPTS) {
-//                user.setIsBlocked(true);
-//            }
-//            throw new IllegalArgumentException("Invalid password");
-//        }
-//        userRepository.save(user);
-//        return user;
-//    }
+
 
 
 }

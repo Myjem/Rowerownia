@@ -44,8 +44,14 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(customizer ->
                         customizer
-                                .requestMatchers("/login", "/logout","/**", "/home", "/api/v1/**").permitAll()
-                                .anyRequest().authenticated()
+                                .requestMatchers("/api/v1/auth/worker/**").hasRole("WORKER")
+                                .requestMatchers("/api/v1/auth/user/**").hasAnyRole("WORKER", "USER")
+                                .requestMatchers("/api/v1/**").permitAll()
+                                .requestMatchers("/login","/register","/logout","/**", "/home").permitAll()
+                                .requestMatchers("favicon.ico").permitAll()
+                                .requestMatchers("/error").permitAll()
+                                .anyRequest()
+                                .authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(customizer -> customizer
@@ -54,16 +60,17 @@ public class SecurityConfig {
                         .failureHandler(authenticationFailureHandler(customUserDetailsService))
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // Sesja wymagana
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
                         .expiredUrl("/login")
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/logout")
+                        .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
+                        .permitAll()
                 );
 
         return http.build();
@@ -99,14 +106,6 @@ public class SecurityConfig {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
-
-//    @Bean
-//    public DaoAuthenticationProvider daoAuthenticationProvider() {
-//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//        provider.setPasswordEncoder(new BCryptPasswordEncoder());
-//        provider.setUserDetailsService(customUserDetailsService);
-//        return provider;
-//    }
 
 
 }
