@@ -1,9 +1,18 @@
 package com.rowerownia.rowerownia.DTO;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 public class RepairBookingRequest {
+    @NotNull
     private Integer userId;
+    @NotNull
+    @Size(min = 10, max = 10)
     private String rbookingDate;
+    @NotNull
+    @Size(min = 10, max = 10)
     private String repairDate;
+    @NotNull
     private Integer repairId;
 
     public Integer getUserId() {

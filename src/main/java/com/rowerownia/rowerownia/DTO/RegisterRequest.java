@@ -1,14 +1,25 @@
 package com.rowerownia.rowerownia.DTO;
 
 import com.rowerownia.rowerownia.entity.Enums;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class RegisterRequest {
+    @NotNull(message = "Login is mandatory")
+    @Size(min=2,max=12, message = "Login must be between 2 and 12 characters")
     private String login;
+    @NotNull(message = "Password is mandatory")
+    @Size(min=4, message = "Password must be at least 4 characters")
     private String password;
+    @NotNull(message = "Name is mandatory")
     private String name;
+    @NotNull(message = "Surname is mandatory")
     private String surname;
+    @NotNull(message = "Birth date is mandatory")
+    @Size(min=10, max=10, message = "Birth date must be in format yyyy-mm-dd")
     private String birthDate;
-    private Enums.level level;
+    @NotNull(message = "Level is mandatory")
+    private Enums.level level= Enums.level.USER;
 
     public void setLogin(String login) {
         this.login = login;

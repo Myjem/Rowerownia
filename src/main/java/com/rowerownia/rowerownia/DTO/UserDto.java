@@ -12,7 +12,7 @@ public record UserDto(
         String name,
         String surname,
         String accessLevel,
-        int failedLoginAttempts,
+        Integer failedLoginAttempts,
         boolean isBlocked
 
 ) { }

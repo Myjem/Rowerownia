@@ -90,7 +90,16 @@ public class UserService {
 
     public UserDto getLoggedUser(){
         User currentUser = (User) getAuthentication().getPrincipal();
-        return new UserDto(currentUser.getUserId(), currentUser.getLogin(),currentUser.getBirthDate().toString(), currentUser.getName(), currentUser.getSurname());
+        return new UserDto(
+                currentUser.getUserId(),
+                currentUser.getLogin(),
+                currentUser.getPassword(),
+                currentUser.getBirthDate().toString(),
+                currentUser.getName(),
+                currentUser.getSurname(),
+                currentUser.getAccessLevel().toString(),
+                currentUser.getFailedLoginAttempts(),
+                currentUser.getIsBlocked());
     }
 
     @Transactional

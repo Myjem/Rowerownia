@@ -3,6 +3,7 @@ package com.rowerownia.rowerownia.controller;
 import com.rowerownia.rowerownia.DTO.RepairBookingRequest;
 import com.rowerownia.rowerownia.entity.RepairBooking;
 import com.rowerownia.rowerownia.service.RepairBookingService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,7 +49,7 @@ public class RepairBookingController {
     }
 
     @PostMapping(path = "/auth/user/repairBooking/add")
-    public void addNewUserRepairBooking(@RequestBody RepairBookingRequest repairBookingRequest) {
+    public void addNewUserRepairBooking(@Valid @RequestBody RepairBookingRequest repairBookingRequest) {
         repairBookingService.addNewUserRepairBooking(repairBookingRequest);
     }
 

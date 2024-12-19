@@ -3,6 +3,7 @@ package com.rowerownia.rowerownia.controller;
 import com.rowerownia.rowerownia.DTO.BikeBookingRequest;
 import com.rowerownia.rowerownia.entity.BikeBooking;
 import com.rowerownia.rowerownia.service.BikeBookingService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,7 +55,7 @@ public class BikeBookingController {
     }
 
     @PostMapping(path = "/auth/user/bikeBooking/add")
-    public void addNewUserBikeBooking(@RequestBody BikeBookingRequest bikeBookingRequest) {
+    public void addNewUserBikeBooking(@Valid @RequestBody BikeBookingRequest bikeBookingRequest) {
         bikeBookingService.addNewUserBikeBooking(bikeBookingRequest);
     }
 

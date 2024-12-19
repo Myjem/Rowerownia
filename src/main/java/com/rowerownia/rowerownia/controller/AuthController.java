@@ -6,6 +6,7 @@ import com.rowerownia.rowerownia.entity.User;
 import com.rowerownia.rowerownia.repository.UserRepository;
 import com.rowerownia.rowerownia.service.AuthService;
 import com.rowerownia.rowerownia.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +27,7 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping(path = "/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
         User registerUser = authService.register(registerRequest);
         if (registerUser == null) {
             return ResponseEntity.badRequest().body("User already exists");
