@@ -18,18 +18,13 @@ public class BikeController {
         this.bikeService = bikeService;
     }
 
-    @GetMapping(path="/bike")
-    public List<Bike> getBikes() {
-        return bikeService.getBikes();
-    }
-
     @PostMapping(path="/auth/worker/bike/add")
     public void addNewBike(@RequestBody Bike bike) {
         bikeService.addNewBike(bike);
     }
 
     @DeleteMapping(path="/auth/worker/bike/delete/{bikeId}")
-    public void deleteUser(@PathVariable("bikeId") Integer bikeId) {
+    public void deleteBike(@PathVariable("bikeId") Integer bikeId) {
         bikeService.deleteBike(bikeId);
     }
 
@@ -40,6 +35,11 @@ public class BikeController {
             @RequestParam(required = false) String bikeSize,
             @RequestParam(required = false) Integer bikePrice) {
         bikeService.updateBike(bikeId, bikeName, bikeSize, bikePrice);
+    }
+
+    @GetMapping(path="/bike")
+    public List<Bike> getBikes() {
+        return bikeService.getBikes();
     }
 
     @PutMapping(path = "/auth/worker/bike/set/{bikeId}")

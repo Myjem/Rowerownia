@@ -16,4 +16,6 @@ public interface BikeBookingRepository
     List<BikeBooking> findByBikes_BikeId(Integer bikeId);
     List<BikeBooking> findByUser_UserId(Integer userUserId);
     List<BikeBooking> findByUser_UserIdAndBikeStatus(Integer userUserId, Enums.status bikeStatus);
+
+    List<BikeBooking> findByBikeStatus(Enums.status bikeStatus);
 }

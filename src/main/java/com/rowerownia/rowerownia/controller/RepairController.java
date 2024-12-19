@@ -18,11 +18,6 @@ public class RepairController {
         this.repairService = repairService;
     }
 
-    @GetMapping(path="/repair")
-    public List<Repair> getRepairs() {
-        return repairService.getRepairs();
-    }
-
     @PostMapping(path="/auth/worker/repair/add")
     public void addNewRepair(@RequestBody Repair repair) {
         repairService.addNewRepair(repair);
@@ -41,4 +36,10 @@ public class RepairController {
             @RequestParam(required = false) Integer repairPrice) {
         repairService.updateRepair(repairId, repairName, repairTime, repairPrice);
     }
+
+    @GetMapping(path="/repair")
+    public List<Repair> getRepairs() {
+        return repairService.getRepairs();
+    }
+
 }

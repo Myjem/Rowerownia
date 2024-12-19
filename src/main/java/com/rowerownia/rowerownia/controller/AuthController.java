@@ -35,18 +35,16 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/login")
-    public String login(@RequestParam(value = "session", required = false) String sessionStatus) {
-        if ("expired".equals(sessionStatus)) {
-            return "Your session has expired. Please log in again.";
-        }
-        if ("invalid".equals(sessionStatus)) {
-            return "Your session is invalid. Please log in again.";
-        }
-        return "Login page";
-    }
-    @GetMapping("/logout")
-    public String logoutPage() {
-        return "You have been successfully logged out.";
-    }
+//    @GetMapping("/login")
+//    public String login(@RequestParam(value = "session", required = false) String sessionStatus) {
+//        if ("expired".equals(sessionStatus)) {
+//            return "Your session has expired. Please log in again.";
+//        }
+//        if ("invalid".equals(sessionStatus)) {
+//            return "Your session is invalid. Please log in again.";
+//        }
+//        return "Login page";
+//    }
+
+
 }

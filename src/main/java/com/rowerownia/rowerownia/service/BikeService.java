@@ -59,6 +59,7 @@ public class BikeService {
         }
         bikeRepository.deleteById(bikeId);
     }
+
     @Transactional
     public void updateBike(Integer bikeId, String bikeName, String bikeSize, Integer bikePrice) {
         Bike bike = bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("bike with id " + bikeId + " does not exists"));
@@ -81,6 +82,7 @@ public class BikeService {
             bike.setBikePrice(bikePrice);
         }
     }
+
     @Transactional
     public void setStatus(Integer bikeId,boolean broken) {
         Bike bike = bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("bike with id " + bikeId + " does not exists"));
@@ -93,8 +95,5 @@ public class BikeService {
         }
 
     }
-
-
-
 
 }

@@ -26,10 +26,6 @@ public class RepairService {
         repairRepository.save(repair);
     }
 
-    public List<Repair> getRepairs() {
-        return repairRepository.findAll();
-    }
-
     public void deleteRepair(Integer repairId) {
         boolean exists = repairRepository.existsById(repairId);
         if(!exists){
@@ -77,4 +73,9 @@ public class RepairService {
             repair.setRepairPrice(repairPrice);
         }
     }
+
+    public List<Repair> getRepairs() {
+        return repairRepository.findAll();
+    }
+
 }
