@@ -10,6 +10,8 @@ import com.rowerownia.rowerownia.repository.BikeRepository;
 import com.rowerownia.rowerownia.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,6 +35,10 @@ public class BikeBookingService {
         this.userRepository = userRepository;
         this.bikeRepository = bikeRepository;
         this.userService = userService;
+    }
+
+    private Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 
     public List<BikeBooking> getBikeBookings() {
@@ -60,11 +66,22 @@ public class BikeBookingService {
     }
 
     public List<BikeBooking> getUserBikeBookings() {
-        return bikeBookingRepository.findByUser_UserId(userService.getLoggedUser().userId());
+        Authentication authentication = getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        String username = ((org.springframework.security.core.userdetails.User) getAuthentication().getPrincipal()).getUsername();
+        return bikeBookingRepository.findByUser_UserId(userRepository.findUserByLogin(username).get().getUserId());
     }
-
+@Transactional
     public void cancelUserBooking(Integer bikeBookingId) {
-        if(!bikeBookingRepository.findById(bikeBookingId).get().getUser().getUserId().equals(userService.getLoggedUser().userId())) {
+        Authentication authentication = getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        String username = ((org.springframework.security.core.userdetails.User) getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findUserByLogin(username).orElseThrow(() -> new IllegalStateException("User not found"));
+        if(!bikeBookingRepository.findById(bikeBookingId).get().getUser().getUserId().equals(user.getUserId())) {
             throw new IllegalStateException("You can't cancel this booking");
         }
         BikeBooking bikeBooking = bikeBookingRepository.findById(bikeBookingId).orElseThrow(() -> new IllegalStateException("Booking with id " + bikeBookingId + " does not exists"));
@@ -73,8 +90,13 @@ public class BikeBookingService {
 
     @Transactional
     public void addNewUserBikeBooking(BikeBookingRequest bikeBookingRequest) {
-        User user = userRepository.findById(userService.getLoggedUser().userId())
-                .orElseThrow(() -> new IllegalStateException("User with id " + userService.getLoggedUser().userId() + " does not exists"));
+        Authentication authentication = getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        String username = ((org.springframework.security.core.userdetails.User) getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findUserByLogin(username)
+                .orElseThrow(() -> new IllegalStateException("User does not exists"));
 
         if(!user.getUserId().equals(bikeBookingRequest.getUserId())){
             throw new IllegalStateException("You can't make booking for other user");

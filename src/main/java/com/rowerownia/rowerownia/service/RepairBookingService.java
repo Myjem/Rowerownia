@@ -11,6 +11,7 @@ import com.rowerownia.rowerownia.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -32,16 +33,22 @@ public class RepairBookingService {
         this.repairRepository = repairRepository;
         this.userService = userService;
     }
+    private Authentication getAuthentication() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
     public List<RepairBooking> getRepairBookings() {
         return repairBookingRepository.findAll();
     }
 
+    @Transactional
     public void cancelRepairBooking(Integer repairBookingId) {
         RepairBooking repairBooking =repairBookingRepository.findById(repairBookingId)
                 .orElseThrow(() -> new IllegalStateException("Repair booking with id " + repairBookingId + " does not exists"));
         repairBooking.setRepairStatus(Enums.status.DELETED);
     }
 
+@Transactional
     public void finishRepairBooking(Integer repairBookingId) {
         RepairBooking repairBooking =repairBookingRepository.findById(repairBookingId)
                 .orElseThrow(() -> new IllegalStateException("Repair booking with id " + repairBookingId + " does not exists"));
@@ -49,13 +56,25 @@ public class RepairBookingService {
     }
 
     public List<RepairBooking> getUserRepairBookings() {
-        return repairBookingRepository.findByUser_UserId(userService.getLoggedUser().userId());
+        Authentication authentication = getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        String username = ((org.springframework.security.core.userdetails.User) getAuthentication().getPrincipal()).getUsername();
+        return repairBookingRepository.findByUser_UserId(userRepository.findUserByLogin(username).get().getUserId());
     }
-
+@Transactional
     public void cancelUserRepairBooking(Integer repairBookingId) {
+        Authentication authentication = getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        String username = ((org.springframework.security.core.userdetails.User) getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findUserByLogin(username)
+                .orElseThrow(() -> new IllegalStateException("User does not exists"));
         RepairBooking repairBooking = repairBookingRepository.findById(repairBookingId)
                 .orElseThrow(() -> new IllegalStateException("Repair booking with id " + repairBookingId + " does not exists"));
-        if (!repairBooking.getUser().getUserId().equals(userService.getLoggedUser().userId())) {
+        if (!repairBooking.getUser().getUserId().equals(user.getUserId())) {
             throw new IllegalStateException("You can't cancel this booking");
         }
         repairBooking.setRepairStatus(Enums.status.DELETED);
@@ -63,9 +82,13 @@ public class RepairBookingService {
 
     @Transactional
     public void addNewUserRepairBooking(RepairBookingRequest repairBookingRequest) {
-        User user = userRepository.findById(userService.getLoggedUser().userId())
-                .orElseThrow(() -> new IllegalStateException("User with id " + userService.getLoggedUser().userId() + " does not exists"));
-
+        Authentication authentication = getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        String username = ((org.springframework.security.core.userdetails.User) getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findUserByLogin(username)
+                .orElseThrow(() -> new IllegalStateException("User does not exists"));
         if(!user.getUserId().equals(repairBookingRequest.getUserId())){
             throw new IllegalStateException("You can't make booking for other user");
         }

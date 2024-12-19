@@ -11,6 +11,8 @@ import com.rowerownia.rowerownia.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
@@ -18,10 +20,11 @@ import java.time.LocalDate;
 public class RepairBookingConfig {
     @Bean
     CommandLineRunner repairBookingCommandLineRunner(RepairBookingRepository repository, UserService userService, UserRepository userRepository, RepairRepository repairRepository) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return args -> {
             User user = new User(
                     "check",
-                    "pass_check",
+                    passwordEncoder.encode("pass_check"),
                     LocalDate.of(1990,2,13),
                     "Czarek",
                     "Czekowy"

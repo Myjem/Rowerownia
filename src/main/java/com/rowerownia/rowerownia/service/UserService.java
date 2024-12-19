@@ -89,7 +89,12 @@ public class UserService {
     }
 
     public UserDto getLoggedUser(){
-        User currentUser = (User) getAuthentication().getPrincipal();
+        Authentication authentication = getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        String username = ((org.springframework.security.core.userdetails.User) getAuthentication().getPrincipal()).getUsername();
+        User currentUser = userRepository.findUserByLogin(username).orElseThrow(() -> new IllegalStateException("User not found"));
         return new UserDto(
                 currentUser.getUserId(),
                 currentUser.getLogin(),
@@ -104,7 +109,12 @@ public class UserService {
 
     @Transactional
     public void deleteLoggedUser(){
-        User user = (User) getAuthentication().getPrincipal();
+        Authentication authentication = getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("User not logged in");
+        }
+        String username = ((org.springframework.security.core.userdetails.User) getAuthentication().getPrincipal()).getUsername();
+        User user = userRepository.findUserByLogin(username).orElseThrow(() -> new IllegalStateException("User not found"));
         List<BikeBooking> bikeBookings = bikeBookingRepository.findByUser_UserId(user.getUserId());
         if(!bikeBookings.isEmpty()){
             for (BikeBooking bikeBooking : bikeBookings) {
