@@ -107,7 +107,7 @@ public class BikeBookingService {
                 .collect(Collectors.toList());
 
         for (Bike bike : bikes) {
-            if (bike.getBikeName().equals("deleted_bike")) {
+            if (bike.getBikeName().equals("deleted_Bike")) {
                 throw new IllegalStateException("You can't use this bike");
             }
         }

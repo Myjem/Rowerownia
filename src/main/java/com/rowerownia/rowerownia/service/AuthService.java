@@ -35,7 +35,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setName(registerRequest.getName());
         user.setSurname(registerRequest.getSurname());
-        user.setBirthDate(LocalDate.parse(registerRequest.getBirthDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        user.setBirthDate(LocalDate.parse(registerRequest.getBirthDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         return userRepository.save(user);
 

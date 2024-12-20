@@ -2,6 +2,7 @@ package com.rowerownia.rowerownia.DTO;
 
 import com.rowerownia.rowerownia.entity.Enums;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class RegisterRequest {
@@ -16,7 +17,7 @@ public class RegisterRequest {
     @NotNull(message = "Surname is mandatory")
     private String surname;
     @NotNull(message = "Birth date is mandatory")
-    @Size(min=10, max=10, message = "Birth date must be in format yyyy-mm-dd")
+    @Pattern(regexp = "^(19|20)\\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$", message = "Date must be in format yyyy-mm-dd")
     private String birthDate;
     @NotNull(message = "Level is mandatory")
     private Enums.level level= Enums.level.USER;

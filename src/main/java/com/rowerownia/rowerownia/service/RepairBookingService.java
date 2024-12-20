@@ -96,7 +96,7 @@ public class RepairBookingService {
         Repair repair = repairRepository.findById(repairBookingRequest.getRepairId())
                 .orElseThrow(() -> new IllegalStateException("Repair with id " + repairBookingRequest.getRepairId() + " does not exists"));
 
-        if(repair.getRepairName().equals("deleted_repair")){
+        if(repair.getRepairName().equals("deleted_Repair")){
             throw new IllegalStateException("You can't use this service");
         }
 
