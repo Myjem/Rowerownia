@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bike Rental - Signup</title>
+</head>
+<body>
+<div id="signup-container">
+  <h2>Create Account</h2>
+  <form id="signup-form">
+    <div>
+      <label for="signup-login">Login</label>
+      <input type="text" id="signup-login" placeholder="Enter your login" required>
+    </div>
+    <div>
+      <label for="signup-password">Password</label>
+      <input type="password" id="signup-password" placeholder="Create a password" required>
+    </div>
+    <div>
+      <label for="signup-birthdate">Birth Date</label>
+      <input type="date" id="signup-birthdate" required>
+    </div>
+    <div>
+      <label for="signup-name">Name</label>
+      <input type="text" id="signup-name" placeholder="Enter your name" required>
+    </div>
+    <div>
+      <label for="signup-surname">Surname</label>
+      <input type="text" id="signup-surname" placeholder="Enter your surname" required>
+    </div>
+    <button type="submit">Sign Up</button>
+  </form>
+</div>
+
+<script>
+  const signupForm = document.getElementById('signup-form');
+
+  signupForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    // Pobranie danych z formularza
+    const login = document.getElementById('signup-login').value;
+    const password = document.getElementById('signup-password').value;
+    const birthDate = document.getElementById('signup-birthdate').value;
+    const name = document.getElementById('signup-name').value;
+    const surname = document.getElementById('signup-surname').value;
+
+    try {
+      // Wysłanie danych do backendu
+      const response = await fetch('http://localhost:8080/register', { // Zmień URL na właściwy endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          login,
+          password,
+          birthDate,
+          name,
+          surname,
+          accessLevel: 1, // Ustawienie domyślnego poziomu dostępu
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert('Account created successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message || 'Something went wrong'}`);
+      }
+    } catch (error) {
+      alert('Error: Could not connect to the server.');
+    }
+  });
+</script>
+</body>
+</html>
