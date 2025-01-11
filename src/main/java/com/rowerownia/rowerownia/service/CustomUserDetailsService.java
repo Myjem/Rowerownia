@@ -19,7 +19,18 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserService userService;
 
+ //   @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        User user = userRepository.findUserByLogin(username)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+//        return user; // Your `User` class implements `UserDetails`
+//    }
 
+//    public UserDetails loadUserById(Integer id) throws Exception {
+//        return userRepository.findById(id)
+//                .orElseThrow(() ->
+//                        new Exception("string"));
+//    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -31,11 +42,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user.getIsBlocked()) {
             throw new LockedException("User blocked");
         }
-        return org.springframework.security.core.userdetails.User.builder()
+        UserDetails temp = org.springframework.security.core.userdetails.User.builder()
                 .username(user.getLogin())
                 .password(user.getPassword())
                 .roles(user.getAccessLevel().name())
                 .build();
+        return temp;
     }
 
     public void handleFailedLogin(String username) {
