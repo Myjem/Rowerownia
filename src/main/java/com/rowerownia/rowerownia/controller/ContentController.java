@@ -34,10 +34,10 @@ public class ContentController {
         System.out.println("ContentController.getHome -> home");
         return "admin";
     }
-    @GetMapping("/usersite")
-    public String getusersite() {
+    @GetMapping("/user")
+    public String getuser() {
         System.out.println("ContentController.getHome -> home");
-        return "usersite";
+        return "user";
     }
     @GetMapping("/login")
     public String getLogin() {

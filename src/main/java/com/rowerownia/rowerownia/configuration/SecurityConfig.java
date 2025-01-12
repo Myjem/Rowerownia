@@ -44,8 +44,8 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(customizer ->
                         customizer
-                                .requestMatchers("/api/v1/auth/worker/**").hasAuthority("WORKER")
-                                .requestMatchers("/api/v1/auth/user/**").hasAnyAuthority("WORKER", "USER")
+                                .requestMatchers("/api/v1/auth/worker/**").hasRole("WORKER")
+                                .requestMatchers("/api/v1/auth/user/me").hasAnyRole("USER", "WORKER")
                                 .requestMatchers("/api/v1/**").permitAll()
                                 .requestMatchers("/login","/register","/logout","/**", "/home").permitAll()
                                 .requestMatchers("favicon.ico").permitAll()
