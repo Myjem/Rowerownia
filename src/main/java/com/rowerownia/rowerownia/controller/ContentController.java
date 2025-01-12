@@ -39,6 +39,11 @@ public class ContentController {
         System.out.println("ContentController.getHome -> home");
         return "user";
     }
+    @GetMapping("/bike")
+    public String getbike() {
+        System.out.println("ContentController.getHome -> home");
+        return "bike";
+    }
     @GetMapping("/login")
     public String getLogin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
