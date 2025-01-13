@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">Worker Dashboard</h1>
+
+    <!-- Add Bike Section -->
+    <section class="mt-4">
+        <h2>Add Bike</h2>
+        <form id="addBikeForm">
+            <div class="mb-3">
+                <label for="bikeName" class="form-label">Bike Name</label>
+                <input type="text" class="form-control" id="bikeName" required>
+            </div>
+            <div class="mb-3">
+                <label for="bikeSize" class="form-label">Bike Size</label>
+                <input type="text" class="form-control" id="bikeSize" required>
+            </div>
+            <div class="mb-3">
+                <label for="bikePrice" class="form-label">Bike Price</label>
+                <input type="number" class="form-control" id="bikePrice" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Bike</button>
+        </form>
+    </section>
+
+    <!-- Add Repair Section -->
+    <section class="mt-4">
+        <h2>Add Repair</h2>
+        <form id="addRepairForm">
+            <div class="mb-3">
+                <label for="repairName" class="form-label">Repair Name</label>
+                <input type="text" class="form-control" id="repairName" required>
+            </div>
+            <div class="mb-3">
+                <label for="repairTime" class="form-label">Repair Time (Hours)</label>
+                <input type="number" class="form-control" id="repairTime" required>
+            </div>
+            <div class="mb-3">
+                <label for="repairPrice" class="form-label">Repair Price</label>
+                <input type="number" class="form-control" id="repairPrice" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Repair</button>
+        </form>
+    </section>
+
+    <!-- Manage Repair Bookings Section -->
+    <section class="mt-4">
+        <h2>Manage Repair Bookings</h2>
+        <button class="btn btn-secondary" id="fetchBookings">Get Repair Bookings</button>
+        <table class="table table-striped mt-3">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Repair</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="bookingTable">
+            <!-- Booking rows will be dynamically populated -->
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Manage Bikes Section -->
+    <section class="mt-4">
+        <h2>Manage Bike Bookings</h2>
+        <button class="btn btn-secondary" id="fetchBikeBookings">Get Bike Bookings</button>
+        <table class="table table-striped mt-3">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Bike</th>
+                <th>Booking date</th>
+                <th>Start date</th>
+                <th>End date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="bikeBookingTable">
+            <!-- Booking rows will be dynamically populated -->
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Delete User Section -->
+    <section class="mt-4">
+        <h2>Delete User</h2>
+        <form id="deleteUserForm">
+            <div class="mb-3">
+                <label for="userId" class="form-label">User ID</label>
+                <input type="number" class="form-control" id="userId" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Delete User</button>
+        </form>
+    </section>
+
+    <section class="mt-4">
+        <h2>Delete Repair</h2>
+        <form id="deleteRepairForm">
+            <div class="mb-3">
+                <label for="deleteRepairId" class="form-label">Repair ID</label>
+                <input type="number" class="form-control" id="deleteRepairId" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Delete Repair</button>
+        </form>
+    </section>
+
+    <section class="mt-4">
+        <h2>Delete Bike</h2>
+        <form id="deleteBikeForm">
+            <div class="mb-3">
+                <label for="deleteBikeId" class="form-label">Bike ID</label>
+                <input type="number" class="form-control" id="deleteBikeId" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Delete Bike</button>
+        </form>
+    </section>
+
+    <div id="message" class="mt-3"></div>
+</div>
+
+<script>
+    function showMessage(message, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
+    }
+
+    // Add Bike
+    document.getElementById('addBikeForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const bikeName = document.getElementById('bikeName').value;
+        const bikeSize = document.getElementById('bikeSize').value;
+        const bikePrice = document.getElementById('bikePrice').value;
+
+        try {
+            const response = await fetch('/api/v1/auth/worker/bike/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    bikeName,
+                    bikeSize,
+                    bikePrice,
+                    broken: false
+                })
+            });
+            if (response.ok) {
+                showMessage('Bike added successfully!', 'success');
+            } else {
+                showMessage('Failed to add bike.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+
+    document.getElementById('deleteRepairForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const repairId = document.getElementById('deleteRepairId').value;
+
+        try {
+            const response = await fetch(`/api/v1/auth/worker/repair/delete/${repairId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                showMessage('Repair deleted successfully!', 'success');
+            } else {
+                showMessage('Failed to delete repair.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+
+    document.getElementById('deleteBikeForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const bikeId = document.getElementById('deleteBikeId').value;
+
+        try {
+            const response = await fetch(`/api/v1/auth/worker/bike/delete/${bikeId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                showMessage('Bike deleted successfully!', 'success');
+            } else {
+                showMessage('Failed to delete bike.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+
+    // Add Repair
+    document.getElementById('addRepairForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const repairName = document.getElementById('repairName').value;
+        const repairTime = document.getElementById('repairTime').value;
+        const repairPrice = document.getElementById('repairPrice').value;
+
+        try {
+            const response = await fetch('/api/v1/auth/worker/repair/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    repairName,
+                    repairTime,
+                    repairPrice
+                })
+            });
+            if (response.ok) {
+                showMessage('Repair added successfully!', 'success');
+            } else {
+                showMessage('Failed to add repair.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+
+    // Fetch Bookings
+    document.getElementById('fetchBookings').addEventListener('click', async function() {
+        try {
+            const response = await fetch('/api/v1/auth/worker/repairBooking');
+            if (response.ok) {
+                const bookings = await response.json();
+                const bookingTable = document.getElementById('bookingTable');
+                bookingTable.innerHTML = '';
+
+                bookings.forEach(booking => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                            <td>${booking.repairBookingId}</td>
+                            <td>${booking.user.login}</td>
+                            <td>${booking.repair.repairName}</td>
+                            <td>${booking.repairDate}</td>
+                            <td>${booking.repairStatus}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="cancelBooking(${booking.repairBookingId})">Cancel</button>
+                            </td>
+                        `;
+                    bookingTable.appendChild(row);
+                });
+            } else {
+                showMessage('Failed to fetch bookings.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+    // Fetch bike Bookings
+    document.getElementById('fetchBikeBookings').addEventListener('click', async function() {
+        const bikeBookingTable = document.getElementById('bikeBookingTable');
+        if (!bikeBookingTable) {
+            showMessage('Error: Table element not found.', 'danger');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/v1/auth/worker/bikeBooking');
+            if (response.ok) {
+                const bookings = await response.json();
+                bikeBookingTable.innerHTML = '';
+
+                bookings.forEach(booking => {
+                    const bikes = booking.bikes.map(bike => bike.bikeName).join(', ');
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                    <td>${booking.bikeBookingId}</td>
+                    <td>${booking.user.login}</td>
+                    <td>${bikes}</td>
+                    <td>${booking.bbookingDate}</td>
+                    <td>${booking.bstartDate}</td>
+                    <td>${booking.bendDate}</td>
+                    <td>${booking.bikeStatus}</td>
+                `;
+                    bikeBookingTable.appendChild(row);
+                });
+            } else {
+                showMessage('Failed to fetch bike bookings.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+
+
+    // Cancel Booking
+    async function cancelBooking(bookingId) {
+        try {
+            const response = await fetch(`/api/v1/auth/worker/repairBooking/${bookingId}/cancel`, {
+                method: 'PUT'
+            });
+            if (response.ok) {
+                showMessage('Booking cancelled successfully!', 'success');
+            } else {
+                showMessage('Failed to cancel booking.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    }
+
+    // Delete User
+    document.getElementById('deleteUserForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const userId = document.getElementById('userId').value;
+
+        try {
+            const response = await fetch(`/api/v1/auth/worker/user/delete/${userId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                showMessage('User deleted successfully!', 'success');
+            } else {
+                showMessage('Failed to delete user.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
