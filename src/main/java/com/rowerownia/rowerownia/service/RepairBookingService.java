@@ -113,11 +113,11 @@ public class RepairBookingService {
         }
         List<RepairBooking> dateBookings= repairBookingRepository.findByRepairDate(repairBooking.getRepairDate());
         if(!dateBookings.isEmpty()){
-            int time=0;
+            double time=0;
             for(RepairBooking booking: dateBookings){
                 time+=booking.getRepair().getRepairTime();
             }
-            if(time+repair.getRepairTime()>8){
+            if(time+repair.getRepairTime()>8.0){
                 throw new IllegalStateException("Too many repairs on this day");
             }
         }

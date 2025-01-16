@@ -128,8 +128,49 @@
         </form>
     </section>
 
+<!-- WYSWIETLANIE ROWERÓW -->
+    <section class="mt-4">
+        <h2>Bike List</h2>
+        <button class="btn btn-secondary" id="fetchBikes">Get Bikes</button>
+        <table class="table table-striped mt-3">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="bikeTable">
+            <!-- Bike rows will be dynamically populated -->
+            </tbody>
+        </table>
+    </section>
+
+    <section class="mt-4">
+        <h2>Repair List</h2>
+        <button class="btn btn-secondary" id="fetchRepairs">Get Repairs</button>
+        <table class="table table-striped mt-3">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Repair Name</th>
+                <th>Repair Time (Hours)</th>
+                <th>Repair Price</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="repairTable">
+            <!-- Repair rows will be dynamically populated -->
+            </tbody>
+        </table>
+    </section>
+
     <div id="message" class="mt-3"></div>
 </div>
+
 
 <script>
     function showMessage(message, type) {
@@ -159,6 +200,7 @@
             });
             if (response.ok) {
                 showMessage('Bike added successfully!', 'success');
+                updateStats();
             } else {
                 showMessage('Failed to add bike.', 'danger');
             }
@@ -177,6 +219,7 @@
             });
             if (response.ok) {
                 showMessage('Repair deleted successfully!', 'success');
+                updateStats();
             } else {
                 showMessage('Failed to delete repair.', 'danger');
             }
@@ -195,6 +238,7 @@
             });
             if (response.ok) {
                 showMessage('Bike deleted successfully!', 'success');
+                updateStats();
             } else {
                 showMessage('Failed to delete bike.', 'danger');
             }
@@ -224,6 +268,7 @@
             });
             if (response.ok) {
                 showMessage('Repair added successfully!', 'success');
+                updateStats();
             } else {
                 showMessage('Failed to add repair.', 'danger');
             }
@@ -232,8 +277,8 @@
         }
     });
 
-    // Fetch Bookings
-    document.getElementById('fetchBookings').addEventListener('click', async function() {
+    // Fetch Repair Bookings and Render in Table
+    document.getElementById('fetchBookings').addEventListener('click', async function () {
         try {
             const response = await fetch('/api/v1/auth/worker/repairBooking');
             if (response.ok) {
@@ -244,39 +289,79 @@
                 bookings.forEach(booking => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                            <td>${booking.repairBookingId}</td>
-                            <td>${booking.user.login}</td>
-                            <td>${booking.repair.repairName}</td>
-                            <td>${booking.repairDate}</td>
-                            <td>${booking.repairStatus}</td>
-                            <td>
-                                <button class="btn btn-danger" onclick="cancelBooking(${booking.repairBookingId})">Cancel</button>
-                            </td>
-                        `;
+                    <td>${booking.repairBookingId}</td>
+                    <td>${booking.user.login}</td>
+                    <td>${booking.repair.repairName}</td>
+                    <td>${booking.repairDate}</td>
+                    <td>${booking.repairStatus}</td>
+                    <td>
+                        <button class="btn btn-danger cancel-booking" data-id="${booking.repairBookingId}">Cancel</button>
+                        <button class="btn btn-success finish-booking" data-id="${booking.repairBookingId}">Finish</button>
+                    </td>
+                `;
                     bookingTable.appendChild(row);
                 });
+
+                // Add event listeners for Cancel buttons
+                document.querySelectorAll('.cancel-booking').forEach(button => {
+                    button.addEventListener('click', async function () {
+                        const bookingId = this.getAttribute('data-id');
+                        try {
+                            const cancelResponse = await fetch(`/api/v1/auth/worker/repairBooking/${bookingId}/cancel`, {
+                                method: 'PUT',
+                            });
+
+                            if (cancelResponse.ok) {
+                                showMessage('Repair booking cancelled successfully!', 'success');
+                                document.getElementById('fetchBookings').click(); // Refresh the table
+                            } else {
+                                showMessage('Failed to cancel repair booking.', 'danger');
+                            }
+                        } catch (error) {
+                            showMessage(`Error: ${error.message}`, 'danger');
+                        }
+                    });
+                });
+
+                // Add event listeners for Finish buttons
+                document.querySelectorAll('.finish-booking').forEach(button => {
+                    button.addEventListener('click', async function () {
+                        const bookingId = this.getAttribute('data-id');
+                        try {
+                            const finishResponse = await fetch(`/api/v1/auth/worker/repairBooking/${bookingId}/finish`, {
+                                method: 'PUT',
+                            });
+
+                            if (finishResponse.ok) {
+                                showMessage('Repair booking marked as finished!', 'success');
+                                updateStats();
+                                document.getElementById('fetchBookings').click(); // Refresh the table
+                            } else {
+                                showMessage('Failed to mark repair booking as finished.', 'danger');
+                            }
+                        } catch (error) {
+                            showMessage(`Error: ${error.message}`, 'danger');
+                        }
+                    });
+                });
             } else {
-                showMessage('Failed to fetch bookings.', 'danger');
+                showMessage('Failed to fetch repair bookings.', 'danger');
             }
         } catch (error) {
             showMessage(`Error: ${error.message}`, 'danger');
         }
     });
-    // Fetch bike Bookings
-    document.getElementById('fetchBikeBookings').addEventListener('click', async function() {
-        const bikeBookingTable = document.getElementById('bikeBookingTable');
-        if (!bikeBookingTable) {
-            showMessage('Error: Table element not found.', 'danger');
-            return;
-        }
 
+    // Fetch Bike Bookings and Render in Table
+    document.getElementById('fetchBikeBookings').addEventListener('click', async function () {
         try {
             const response = await fetch('/api/v1/auth/worker/bikeBooking');
             if (response.ok) {
-                const bookings = await response.json();
+                const bikeBookings = await response.json();
+                const bikeBookingTable = document.getElementById('bikeBookingTable');
                 bikeBookingTable.innerHTML = '';
 
-                bookings.forEach(booking => {
+                bikeBookings.forEach(booking => {
                     const bikes = booking.bikes.map(bike => bike.bikeName).join(', ');
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -287,8 +372,65 @@
                     <td>${booking.bstartDate}</td>
                     <td>${booking.bendDate}</td>
                     <td>${booking.bikeStatus}</td>
+                    <td>
+                        <button class="btn btn-danger cancel-bike-booking" data-id="${booking.bikeBookingId}">Cancel</button>
+                        <button class="btn btn-success finish-bike-booking" data-id="${booking.bikeBookingId}">Finish</button>
+                    </td>
                 `;
                     bikeBookingTable.appendChild(row);
+                });
+
+                // Add event listeners for Cancel buttons
+                document.querySelectorAll('.cancel-bike-booking').forEach(button => {
+                    button.addEventListener('click', async function () {
+                        const bikeBookingId = this.getAttribute('data-id');
+                        try {
+                            const cancelResponse = await fetch(`/api/v1/auth/worker/bikeBooking/cancel/${bikeBookingId}`, {
+                                method: 'PUT',
+                            });
+
+                            if (cancelResponse.ok) {
+                                showMessage('Bike booking cancelled successfully!', 'success');
+                                updateStats();
+                                document.getElementById('fetchBikeBookings').click(); // Refresh the table
+                            } else {
+                                showMessage('Failed to cancel bike booking.', 'danger');
+                            }
+                        } catch (error) {
+                            showMessage(`Error: ${error.message}`, 'danger');
+                        }
+                    });
+                });
+
+                // Add event listeners for Finish buttons
+                document.querySelectorAll('.finish-bike-booking').forEach(button => {
+                    button.addEventListener('click', async function () {
+                        const bikeBookingId = this.getAttribute('data-id');
+                        const bikes = bikeBookings.find(booking => booking.bikeBookingId === bikeBookingId).bikes;
+
+                        const confirmBroken = confirm("Czy rower został zniszczony? Jeśli tak, wybierz OK, w przeciwnym razie wybierz Anuluj.");
+
+                        try {
+                            const brokenBikeIds = confirmBroken ? bikes.map(bike => bike.bikeId) : [];
+                            const finishResponse = await fetch(`/api/v1/auth/worker/bikeBooking/${bikeBookingId}/finish`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ brokenBikeIds }),
+                            });
+
+                            if (finishResponse.ok) {
+                                showMessage('Bike booking marked as finished!', 'success');
+                                updateStats(); // Update stats
+                                document.getElementById('fetchBikeBookings').click(); // Refresh the table
+                            } else {
+                                showMessage('Failed to mark bike booking as finished.', 'danger');
+                            }
+                        } catch (error) {
+                            showMessage(`Error: ${error.message}`, 'danger');
+                        }
+                    });
                 });
             } else {
                 showMessage('Failed to fetch bike bookings.', 'danger');
@@ -297,23 +439,6 @@
             showMessage(`Error: ${error.message}`, 'danger');
         }
     });
-
-
-    // Cancel Booking
-    async function cancelBooking(bookingId) {
-        try {
-            const response = await fetch(`/api/v1/auth/worker/repairBooking/${bookingId}/cancel`, {
-                method: 'PUT'
-            });
-            if (response.ok) {
-                showMessage('Booking cancelled successfully!', 'success');
-            } else {
-                showMessage('Failed to cancel booking.', 'danger');
-            }
-        } catch (error) {
-            showMessage(`Error: ${error.message}`, 'danger');
-        }
-    }
 
     // Delete User
     document.getElementById('deleteUserForm').addEventListener('submit', async function(event) {
@@ -326,6 +451,7 @@
             });
             if (response.ok) {
                 showMessage('User deleted successfully!', 'success');
+                updateStats();
             } else {
                 showMessage('Failed to delete user.', 'danger');
             }
@@ -333,6 +459,216 @@
             showMessage(`Error: ${error.message}`, 'danger');
         }
     });
+    // Fetch Bikes and Render in Table
+    document.getElementById('fetchBikes').addEventListener('click', async function () {
+        try {
+            const response = await fetch('/api/v1/bike');
+            if (response.ok) {
+                const bikes = await response.json();
+                const bikeTable = document.getElementById('bikeTable');
+                bikeTable.innerHTML = '';
+
+                bikes.forEach(bike => {
+                    // Skip rendering the bike if its name is "deleted_Bike"
+                    if (bike.bikeName === 'deleted_Bike') {
+                        return;
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                    <td>${bike.bikeId}</td>
+                    <td><input type="text" value="${bike.bikeName}" data-id="${bike.bikeId}" class="bike-name form-control"></td>
+                    <td><input type="text" value="${bike.bikeSize}" data-id="${bike.bikeId}" class="bike-size form-control"></td>
+                    <td><input type="number" value="${bike.bikePrice}" data-id="${bike.bikeId}" class="bike-price form-control"></td>
+                    <td>
+                        <select data-id="${bike.bikeId}" class="bike-status form-select">
+                            <option value="false" ${!bike.isBroken ? 'selected' : ''}>Available</option>
+                            <option value="true" ${bike.isBroken ? 'selected' : ''}>Broken</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary save-bike" data-id="${bike.bikeId}">Save</button>
+                    </td>
+                `;
+                    bikeTable.appendChild(row);
+                });
+
+                // Add event listeners for "Save" buttons
+                document.querySelectorAll('.save-bike').forEach(button => {
+                    button.addEventListener('click', async function () {
+                        const bikeId = this.getAttribute('data-id');
+                        const bikeName = document.querySelector(`.bike-name[data-id="${bikeId}"]`).value;
+                        const bikeSize = document.querySelector(`.bike-size[data-id="${bikeId}"]`).value;
+                        const bikePrice = document.querySelector(`.bike-price[data-id="${bikeId}"]`).value;
+                        const isBroken = document.querySelector(`.bike-status[data-id="${bikeId}"]`).value === 'true';
+
+                        try {
+                            const updateResponse = await fetch(`/api/v1/auth/worker/bike/update/${bikeId}?bikeName=${bikeName}&bikeSize=${bikeSize}&bikePrice=${bikePrice}&isBroken=${isBroken}`, {
+                                method: 'PUT',
+                            });
+
+                            if (updateResponse.ok) {
+                                showMessage('Bike updated successfully!', 'success');
+                                updateStats();
+                            } else {
+                                showMessage('Failed to update bike.', 'danger');
+                            }
+                        } catch (error) {
+                            showMessage(`Error: ${error.message}`, 'danger');
+                        }
+                    });
+                });
+            } else {
+                showMessage('Failed to fetch bikes.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+
+
+    // Fetch Repairs and Render in Table
+    document.getElementById('fetchRepairs').addEventListener('click', async function () {
+        try {
+            const response = await fetch('/api/v1/repair');
+            if (response.ok) {
+                const repairs = await response.json();
+                const repairTable = document.getElementById('repairTable');
+                repairTable.innerHTML = '';
+
+                repairs.forEach(repair => {
+                    // Skip rendering the repair if its name is "deleted_Repair"
+                    if (repair.repairName === 'deleted_Repair') {
+                        return;
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                    <td>${repair.repairId}</td>
+                    <td><input type="text" value="${repair.repairName}" data-id="${repair.repairId}" class="repair-name form-control"></td>
+                    <td><input type="number" step="0.01" value="${repair.repairTime}" data-id="${repair.repairId}" class="repair-time form-control"></td>
+                    <td><input type="number" value="${repair.repairPrice}" data-id="${repair.repairId}" class="repair-price form-control"></td>
+                    <td>
+                        <button class="btn btn-primary save-repair" data-id="${repair.repairId}">Save</button>
+                    </td>
+                `;
+                    repairTable.appendChild(row);
+                });
+
+                // Add event listeners for "Save" buttons
+                document.querySelectorAll('.save-repair').forEach(button => {
+                    button.addEventListener('click', async function () {
+                        const repairId = this.getAttribute('data-id');
+                        const repairName = document.querySelector(`.repair-name[data-id="${repairId}"]`).value;
+                        const repairTime = parseFloat(document.querySelector(`.repair-time[data-id="${repairId}"]`).value);
+                        const repairPrice = parseInt(document.querySelector(`.repair-price[data-id="${repairId}"]`).value, 10);
+
+                        try {
+                            const updateResponse = await fetch(`/api/v1/auth/worker/repair/update/${repairId}?repairName=${repairName}&repairTime=${repairTime}&repairPrice=${repairPrice}`, {
+                                method: 'PUT',
+                            });
+
+                            if (updateResponse.ok) {
+                                showMessage('Repair updated successfully!', 'success');
+                                updateStats();
+                            } else {
+                                showMessage('Failed to update repair.', 'danger');
+                            }
+                        } catch (error) {
+                            showMessage(`Error: ${error.message}`, 'danger');
+                        }
+                    });
+                });
+            } else {
+                showMessage('Failed to fetch repairs.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+    // Function to fetch and update stats dynamically
+    async function updateStats() {
+        try {
+            // Fetch all required data
+            const [bikesResponse, repairsResponse, bikeBookingsResponse, repairBookingsResponse] = await Promise.all([
+                fetch('/api/v1/bike'),
+                fetch('/api/v1/repair'),
+                fetch('/api/v1/auth/worker/bikeBooking'),
+                fetch('/api/v1/auth/worker/repairBooking')
+            ]);
+
+            if (bikesResponse.ok && repairsResponse.ok && bikeBookingsResponse.ok && repairBookingsResponse.ok) {
+                // Parse responses
+                const bikes = await bikesResponse.json();
+                const repairs = await repairsResponse.json();
+                const bikeBookings = await bikeBookingsResponse.json();
+                const repairBookings = await repairBookingsResponse.json();
+
+                // Calculate counts
+                const bikeCount = bikes.length;
+                const repairCount = repairs.length;
+                const bikeBookingCount = bikeBookings.length;
+                const repairBookingCount = repairBookings.length;
+
+                // Update stats section
+                document.getElementById('stats').innerHTML = `
+                <p><strong>Bikes in System:</strong> ${bikeCount}</p>
+                <p><strong>Repairs in System:</strong> ${repairCount}</p>
+                <p><strong>Bike Bookings:</strong> ${bikeBookingCount}</p>
+                <p><strong>Repair Bookings:</strong> ${repairBookingCount}</p>
+            `;
+            } else {
+                showMessage('Failed to fetch stats.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error fetching stats: ${error.message}`, 'danger');
+        }
+    }
+
+    // Update stats after every action
+    async function updateStats() {
+        try {
+            const [bikesResponse, repairsResponse, bikeBookingsResponse, repairBookingsResponse] = await Promise.all([
+                fetch('/api/v1/bike'),
+                fetch('/api/v1/repair'),
+                fetch('/api/v1/auth/worker/bikeBooking'),
+                fetch('/api/v1/auth/worker/repairBooking')
+            ]);
+
+            if (bikesResponse.ok && repairsResponse.ok && bikeBookingsResponse.ok && repairBookingsResponse.ok) {
+                const bikes = await bikesResponse.json();
+                const repairs = await repairsResponse.json();
+                const bikeBookings = await bikeBookingsResponse.json();
+                const repairBookings = await repairBookingsResponse.json();
+
+                document.getElementById('stats').innerHTML = `
+                <p><strong>Bikes in System:</strong> ${bikes.length - 1}</p>
+                <p><strong>Repairs in System:</strong> ${repairs.length - 1}</p>
+                <p><strong>Bike Bookings:</strong> ${bikeBookings.length}</p>
+                <p><strong>Repair Bookings:</strong> ${repairBookings.length}</p>
+            `;
+            } else {
+                showMessage('Failed to fetch stats.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error fetching stats: ${error.message}`, 'danger');
+        }
+    }
+
+    // Initialize stats on page load
+    updateStats();
+
+    // Add stats section at the bottom of the page
+    document.body.insertAdjacentHTML('beforeend', `
+    <div id="stats" class="container mt-5">
+        <h2>System Stats</h2>
+        <div class="alert alert-info" role="alert">
+            Loading stats...
+        </div>
+    </div>
+`);
+
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

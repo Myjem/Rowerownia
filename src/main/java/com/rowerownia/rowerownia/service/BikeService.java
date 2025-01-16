@@ -61,25 +61,24 @@ public class BikeService {
     }
 
     @Transactional
-    public void updateBike(Integer bikeId, String bikeName, String bikeSize, Integer bikePrice) {
-        Bike bike = bikeRepository.findById(bikeId).orElseThrow(() -> new IllegalStateException("bike with id " + bikeId + " does not exists"));
+    public void updateBike(Integer bikeId, String bikeName, String bikeSize, Integer bikePrice, Boolean isBroken) {
+        Bike bike = bikeRepository.findById(bikeId)
+                .orElseThrow(() -> new IllegalStateException("bike with id " + bikeId + " does not exists"));
 
-        if (bikeName != null &&
-                !bikeName.isEmpty() &&
-                !bike.getBikeName().equals(bikeName)){
+        if (bikeName != null && !bikeName.isEmpty() && !bike.getBikeName().equals(bikeName)) {
             bike.setBikeName(bikeName);
         }
 
-        if (bikeSize != null &&
-                !bikeSize.isEmpty() &&
-                !bike.getBikeSize().equals(bikeSize)){
+        if (bikeSize != null && !bikeSize.isEmpty() && !bike.getBikeSize().equals(bikeSize)) {
             bike.setBikeSize(bikeSize);
         }
 
-        if (bikePrice != null &&
-                bikePrice > 0 &&
-                !bike.getBikePrice().equals(bikePrice)){
+        if (bikePrice != null && bikePrice > 0 && !bike.getBikePrice().equals(bikePrice)) {
             bike.setBikePrice(bikePrice);
+        }
+
+        if (isBroken != null && bike.isBroken() != isBroken) {
+            bike.setBroken(isBroken);
         }
     }
 

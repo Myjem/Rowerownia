@@ -33,8 +33,9 @@ public class BikeController {
             @PathVariable("bikeId") Integer bikeId,
             @RequestParam(required = false) String bikeName,
             @RequestParam(required = false) String bikeSize,
-            @RequestParam(required = false) Integer bikePrice) {
-        bikeService.updateBike(bikeId, bikeName, bikeSize, bikePrice);
+            @RequestParam(required = false) Integer bikePrice,
+            @RequestParam(required = false) Boolean isBroken) {
+        bikeService.updateBike(bikeId, bikeName, bikeSize, bikePrice, isBroken);
     }
 
     @GetMapping(path="/bike")
