@@ -34,7 +34,7 @@ public class BikeBookingController {
     @PutMapping(path = "/auth/worker/bikeBooking/{bikeBookingId}/finish")
     public void finishBooking(
             @PathVariable("bikeBookingId") Integer bikeBookingId,
-            @RequestParam(required = false) List<Integer> brokenBikeIds) {
+            @RequestBody(required = false) List<Integer> brokenBikeIds) {
         bikeBookingService.finishBooking(bikeBookingId, brokenBikeIds);
     }
 

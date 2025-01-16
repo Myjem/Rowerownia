@@ -92,17 +92,13 @@ public class UserService {
     }
 
     public UserDto getLoggedUser(){
-        System.out.println("testtttttttttt");
         Authentication authentication = getAuthentication();
         System.out.println(authentication.getPrincipal());
 //        if (authentication == null) {
 //            throw new IllegalStateException("User not logged in");
 //        }
         String username = ((org.springframework.security.core.userdetails.User) getAuthentication().getPrincipal()).getUsername();
-        System.out.println(username);
         User currentUser = userRepository.findUserByLogin(username).orElseThrow(() -> new IllegalStateException("User not found"));
-        System.out.println("------------");
-        System.out.println(currentUser);
         return new UserDto(
                 currentUser.getUserId(),
                 currentUser.getLogin(),

@@ -168,6 +168,27 @@
         </table>
     </section>
 
+    <section class="mt-4">
+        <h2>Blocked user list</h2>
+        <button class="btn btn-secondary" id="fetchBlockedUsers">Get blocked users</button>
+        <table class="table table-striped mt-3">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Login</th>
+                <th>Access level</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="blockedUserTable">
+            </tbody>
+        </table>
+    </section>
+
+
+
     <div id="message" class="mt-3"></div>
 </div>
 
@@ -406,18 +427,37 @@
                 document.querySelectorAll('.finish-bike-booking').forEach(button => {
                     button.addEventListener('click', async function () {
                         const bikeBookingId = this.getAttribute('data-id');
-                        const bikes = bikeBookings.find(booking => booking.bikeBookingId === bikeBookingId).bikes;
+                        const booking = bikeBookings.find(booking => booking.bikeBookingId === Number(bikeBookingId));
 
-                        const confirmBroken = confirm("Czy rower został zniszczony? Jeśli tak, wybierz OK, w przeciwnym razie wybierz Anuluj.");
+                        if (!booking) {
+                            console.error(`No booking found with id: ${bikeBookingId}`);
+                            showMessage("Error: Booking not found!", "danger");
+                            return;
+                        }
+
+                        const bikes = booking.bikes || [];
+                        console.log("List of bikes in booking:", bikes);
+
+                        // Lista uszkodzonych rowerów
+                        let brokenBikeIds = [];
+
+                        // Iterujemy po każdym rowerze i pytamy użytkownika
+                        for (const bike of bikes) {
+                            const isBroken = confirm(`Czy rower o nazwie ${bike.bikeName}, oraz ID ${bike.bikeId}  jest uszkodzony? OK = TAK, Anuluj = NIE`);
+                            if (isBroken) {
+                                brokenBikeIds.push(bike.bikeId);
+                            }
+                        }
+
+                        console.log("Broken bikes:", brokenBikeIds);
 
                         try {
-                            const brokenBikeIds = confirmBroken ? bikes.map(bike => bike.bikeId) : [];
                             const finishResponse = await fetch(`/api/v1/auth/worker/bikeBooking/${bikeBookingId}/finish`, {
                                 method: 'PUT',
                                 headers: {
                                     'Content-Type': 'application/json',
                                 },
-                                body: JSON.stringify({ brokenBikeIds }),
+                                body: JSON.stringify(brokenBikeIds), // Przekazujemy tylko listę ID rowerów
                             });
 
                             if (finishResponse.ok) {

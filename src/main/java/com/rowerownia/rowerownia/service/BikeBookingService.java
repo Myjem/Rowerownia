@@ -45,6 +45,7 @@ public class BikeBookingService {
         return bikeBookingRepository.findAll();
     }
 
+    @Transactional
     public void cancelBooking(Integer bikeBookingId) {
         BikeBooking bikeBooking = bikeBookingRepository.findById(bikeBookingId).orElseThrow(() -> new IllegalStateException("Booking with id " + bikeBookingId + " does not exists"));
         bikeBooking.setBikeStatus(Enums.status.DELETED);
@@ -124,9 +125,18 @@ public class BikeBookingService {
         if(bikeBooking.getBbookingDate().isAfter(bikeBooking.getBstartDate()) || bikeBooking.getBstartDate().isAfter(bikeBooking.getBendDate()) || bikeBooking.getBbookingDate().isAfter(bikeBooking.getBendDate())) {
             throw new IllegalStateException("Invalid booking dates");
         }
-        List<BikeBooking> confict = bikeBookingRepository.findByBikesInAndBstartDateLessThanEqualAndBendDateGreaterThanEqual(bikeBooking.getBikes(), bikeBooking.getBstartDate(), bikeBooking.getBendDate());
-        if (!confict.isEmpty()) {
-            throw new IllegalStateException("Bike is already booked");
+        for (Bike bike : bikes) {
+            List<BikeBooking> conflicts = bikeBookingRepository.findByBikes_BikeId(bike.getBikeId());
+
+            for (BikeBooking existingBooking : conflicts) {
+                boolean isOverlapping = !(bikeBooking.getBendDate().isBefore(existingBooking.getBstartDate()) ||
+                        bikeBooking.getBstartDate().isAfter(existingBooking.getBendDate()));
+
+                if (isOverlapping) {
+                    throw new IllegalStateException("Bike " + bike.getBikeName() + " is already booked from " +
+                            existingBooking.getBstartDate() + " to " + existingBooking.getBendDate());
+                }
+            }
         }
         List<Bike> brokenBikes = bikeBooking.getBikes().stream()
                 .filter(bike -> bike.isBroken())
