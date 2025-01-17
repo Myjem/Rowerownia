@@ -77,9 +77,9 @@ public class UserController {
 //        return userService.isBlocked(userId);
 //    }
 //
-//    @GetMapping(path = "/worker/user/{userId}/fail")
-//    public Integer getFailedAttempts(@PathVariable("userId") Integer userId) {
-//        return userService.getFailedAttempts(userId);
-//    }
+    @GetMapping(path = "/login/{userId}/fail")
+    public Integer getFailedAttempts(@PathVariable("userId") Integer userId) {
+        return userService.getFailedAttempts(userId);
+    }
 
 }

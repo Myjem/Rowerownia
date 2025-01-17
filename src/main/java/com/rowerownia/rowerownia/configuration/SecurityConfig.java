@@ -46,7 +46,7 @@ public class SecurityConfig {
                         customizer
                                 .requestMatchers("/api/v1/auth/worker/**").hasRole("WORKER")
                                 .requestMatchers("/api/v1/auth/user/**").hasAnyRole("USER", "WORKER")
-                                .requestMatchers("/api/v1/**").permitAll()
+                                .requestMatchers("/api/v1/**").permitAll() //request matcher quth/login/** dodac
                                 .requestMatchers("/login","/register","/logout","/**", "/home").permitAll()
                                 .requestMatchers("favicon.ico").permitAll()
                                 .requestMatchers("/error").permitAll()

@@ -162,12 +162,18 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public Integer getFailedAttemptsByUsername(String username) {
+        Optional<User> user = userRepository.findUserByLogin(username);
+        return user.map(User::getFailedLoginAttempts).orElse(0);
+    }
 
 
 
 
 
-//    public  void addNewUser(User user) {
+
+
+    //    public  void addNewUser(User user) {
 //        Optional<User> userByLogin = userRepository.findUserByLogin(user.getLogin());
 //        if(userByLogin.isPresent()){
 //            throw new IllegalStateException("login taken");
@@ -191,13 +197,13 @@ public class UserService {
 //        }
 //    }
 //
-//    public Integer getFailedAttempts(Integer userId){
-//        User user = userRepository.findUserByUserId(userId);
-//        if (user == null) {
-//            throw new IllegalStateException("User with id " + userId + " does not exist");
-//        }
-//        return user.getFailedLoginAttempts();
-//    }
+    public Integer getFailedAttempts(Integer userId){
+        User user = userRepository.findUserByUserId(userId);
+        if (user == null) {
+            throw new IllegalStateException("User with id " + userId + " does not exist");
+        }
+        return user.getFailedLoginAttempts();
+    }
 //
 //    public boolean isBlocked(Integer userId){
 //        User user = userRepository.findUserByUserId(userId);

@@ -7,18 +7,17 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <style>
     body {
+      background-color: #f8f9fa;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
       align-items: center;
+      justify-content: center;
       height: 100vh;
-      background-color: #f8f9fa;
     }
     nav {
-      width: 100%;
       position: fixed;
       top: 0;
-      left: 0;
+      width: 100%;
       z-index: 1000;
     }
     #signup-container {
@@ -32,7 +31,6 @@
     }
     h2 {
       text-align: center;
-      margin-bottom: 1.5rem;
     }
     .form-group {
       margin-bottom: 1rem;
@@ -44,44 +42,44 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Projekt Baza Danych</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+<div class="container-fluid">
+  <a class="navbar-brand" href="#">Projekt Baza Danych</a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="/login">Logowanie</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/register">Rejestracja</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/user">Strona użytkownika</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/bike">Lista rowerów</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/repair">Lista napraw</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/worker">Worker</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/workermanage">Worker Manage</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-danger" href="/logout" id="logout">Wylogowywanie</a>
-        </li>
-      </ul>
-    </div>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/login">Logowanie</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/register">Rejestracja</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/user">Strona użytkownika</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/bike">Lista rowerów</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/repair">Lista napraw</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/worker">Worker</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/workermanage">Worker Manage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-danger" href="/logout" id="logout">Wylogowywanie</a>
+      </li>
+    </ul>
   </div>
+</div>
 </nav>
-<div id="signup-container" class="container">
+<div id="signup-container">
   <h2>Create Account</h2>
   <form id="signup-form">
     <div class="form-group">
@@ -107,6 +105,46 @@
     <button type="submit" class="btn btn-primary">Sign Up</button>
   </form>
 </div>
+
+<script>
+  const signupForm = document.getElementById('signup-form');
+
+  signupForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const login = document.getElementById('signup-login').value;
+    const password = document.getElementById('signup-password').value;
+    const birthDate = document.getElementById('signup-birthdate').value;
+    const name = document.getElementById('signup-name').value;
+    const surname = document.getElementById('signup-surname').value;
+
+    try {
+      const response = await fetch('http://localhost:8080/api/v1/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          login,
+          password,
+          birthDate,
+          name,
+          surname,
+          accessLevel: 1,
+        }),
+      });
+
+      if (response.ok) {
+        alert('Account created successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message || 'Something went wrong'}`);
+      }
+    } catch (error) {
+      alert('Error: Could not connect to the server.');
+    }
+  });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
