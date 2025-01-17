@@ -7,6 +7,44 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Projekt Baza Danych</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Logowanie</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/register">Rejestracja</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user">Strona użytkownika</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/bike">Lista rowerów</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/repair">Lista napraw</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/worker">Worker</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/workermanage">Worker Manage</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="#" id="logout">Wylogowywanie</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 <div class="container mt-5">
     <h1 class="text-center">Worker Dashboard</h1>
 
@@ -94,17 +132,6 @@
         </table>
     </section>
 
-    <!-- Delete User Section -->
-    <section class="mt-4">
-        <h2>Delete User</h2>
-        <form id="deleteUserForm">
-            <div class="mb-3">
-                <label for="userId" class="form-label">User ID</label>
-                <input type="number" class="form-control" id="userId" required>
-            </div>
-            <button type="submit" class="btn btn-danger">Delete User</button>
-        </form>
-    </section>
 
     <section class="mt-4">
         <h2>Delete Repair</h2>
@@ -179,13 +206,16 @@
                 <th>Surname</th>
                 <th>Login</th>
                 <th>Access level</th>
+                <th>Blocked</th>
                 <th>Actions</th>
             </tr>
             </thead>
-            <tbody id="blockedUserTable">
+            <tbody id="userTable">
+            <!-- Wiersze użytkowników będą dodawane dynamicznie -->
             </tbody>
         </table>
     </section>
+
 
 
 
@@ -335,6 +365,7 @@
                             if (cancelResponse.ok) {
                                 showMessage('Repair booking cancelled successfully!', 'success');
                                 document.getElementById('fetchBookings').click(); // Refresh the table
+                                updateStats();
                             } else {
                                 showMessage('Failed to cancel repair booking.', 'danger');
                             }
@@ -480,25 +511,6 @@
         }
     });
 
-    // Delete User
-    document.getElementById('deleteUserForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const userId = document.getElementById('userId').value;
-
-        try {
-            const response = await fetch(`/api/v1/auth/worker/user/delete/${userId}`, {
-                method: 'DELETE'
-            });
-            if (response.ok) {
-                showMessage('User deleted successfully!', 'success');
-                updateStats();
-            } else {
-                showMessage('Failed to delete user.', 'danger');
-            }
-        } catch (error) {
-            showMessage(`Error: ${error.message}`, 'danger');
-        }
-    });
     // Fetch Bikes and Render in Table
     document.getElementById('fetchBikes').addEventListener('click', async function () {
         try {
@@ -509,10 +521,12 @@
                 bikeTable.innerHTML = '';
 
                 bikes.forEach(bike => {
-                    // Skip rendering the bike if its name is "deleted_Bike"
+
                     if (bike.bikeName === 'deleted_Bike') {
                         return;
                     }
+
+                    const isBikeBroken = bike.isBroken ?? bike.broken ?? false;
 
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -522,8 +536,8 @@
                     <td><input type="number" value="${bike.bikePrice}" data-id="${bike.bikeId}" class="bike-price form-control"></td>
                     <td>
                         <select data-id="${bike.bikeId}" class="bike-status form-select">
-                            <option value="false" ${!bike.isBroken ? 'selected' : ''}>Available</option>
-                            <option value="true" ${bike.isBroken ? 'selected' : ''}>Broken</option>
+                            <option value="false" ${!isBikeBroken ? 'selected' : ''}>Available</option>
+                            <option value="true" ${isBikeBroken ? 'selected' : ''}>Broken</option>
                         </select>
                     </td>
                     <td>
@@ -707,6 +721,114 @@
         </div>
     </div>
 `);
+
+    document.getElementById("fetchBlockedUsers").addEventListener("click", async function () {
+        try {
+            const response = await fetch("/api/v1/auth/worker/user/all");
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const users = await response.json();
+            console.log("Otrzymana odpowiedź:", users); //
+
+            if (!Array.isArray(users)) {
+                throw new Error("Błąd: Odpowiedź nie jest tablicą!");
+            }
+
+            const userTable = document.getElementById("userTable");
+            userTable.innerHTML = "";
+
+            users.forEach(user => {
+                const row = document.createElement("tr");
+                row.setAttribute("id", `user-${user.userId}`);
+                row.innerHTML = `
+                <td>${user.userId}</td>
+                <td>${user.name}</td>
+                <td>${user.surname}</td>
+                <td>${user.login}</td>
+                <td>
+                    <select class="access-level form-control" data-userid="${user.userId}">
+                        <option value="USER" ${user.accessLevel === "USER" ? "selected" : ""}>USER</option>
+                        <option value="WORKER" ${user.accessLevel === "WORKER" ? "selected" : ""}>WORKER</option>
+                    </select>
+                </td>
+                <td>${user.isBlocked ? " Tak" : " Nie"}</td>
+                <td>
+                    ${user.isBlocked ? `<button class="btn btn-success unblock-user" data-userid="${user.userId}">Odblokuj</button>` : ""}
+                    <button class="btn btn-danger delete-user" data-userid="${user.userId}">Usuń</button>
+                </td>
+            `;
+                userTable.appendChild(row);
+            });
+        } catch (error) {
+            console.error("Błąd pobierania użytkowników:", error);
+        }
+    });
+
+    // Obsługa akcji w tabeli (delegacja zdarzeń)
+    document.getElementById("userTable").addEventListener("click", async function (event) {
+        const target = event.target;
+
+        if (target.classList.contains("unblock-user")) {
+            await unblockUser(target.dataset.userid);
+        } else if (target.classList.contains("delete-user")) {
+            await deleteUser(target.dataset.userid);
+        }
+    });
+
+    // Obsługa zmiany poziomu dostępu użytkownika
+    document.getElementById("userTable").addEventListener("change", async function (event) {
+        if (event.target.classList.contains("access-level")) {
+            const userId = event.target.dataset.userid;
+            const accessLevel = event.target.value;
+            await changeAccessLevel(userId, accessLevel);
+        }
+    });
+
+    // Odblokowywanie użytkownika
+    async function unblockUser(userId) {
+        try {
+            const response = await fetch(`/api/v1/auth/worker/unblock/${userId}`, { method: "PUT" });
+            if (response.ok) {
+                document.getElementById(`user-${userId}`).querySelector("td:nth-child(6)").innerHTML = "Nie"; // Aktualizacja flagi
+                document.getElementById(`user-${userId}`).querySelector(".unblock-user").remove(); // Usuń przycisk "Odblokuj"
+            } else {
+                console.error("Błąd odblokowywania użytkownika");
+            }
+        } catch (error) {
+            console.error("Błąd:", error);
+        }
+    }
+
+    // Usuwanie użytkownika
+    async function deleteUser(userId) {
+        if (!confirm("Czy na pewno chcesz usunąć tego użytkownika?")) return;
+
+        try {
+            const response = await fetch(`/api/v1/auth/worker/user/delete/${userId}`, { method: "DELETE" });
+            if (response.ok) {
+                document.getElementById(`user-${userId}`).remove();
+            } else {
+                console.error("Błąd usuwania użytkownika");
+            }
+        } catch (error) {
+            console.error("Błąd:", error);
+        }
+    }
+
+    // Zmiana poziomu dostępu użytkownika
+    async function changeAccessLevel(userId, accessLevel) {
+        try {
+            const response = await fetch(`/api/v1/auth/worker/user/level/${userId}/${accessLevel}`, { method: "PUT" });
+            if (!response.ok) {
+                console.error("Błąd zmiany poziomu dostępu");
+            }
+        } catch (error) {
+            console.error("Błąd:", error);
+        }
+    }
+
 
 
 </script>

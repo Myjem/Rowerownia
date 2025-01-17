@@ -7,9 +7,46 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Projekt Baza Danych</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/login">Logowanie</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/register">Rejestracja</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user">Strona użytkownika</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/bike">Lista rowerów</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/repair">Lista napraw</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/worker">Worker</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/workermanage">Worker Manage</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="#" id="logout">Wylogowywanie</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 <div class="container mt-5">
     <h1 class="text-center">Update Your Information</h1>
-
 
     <form id="updateForm" class="mt-4">
         <div class="mb-3">
@@ -26,31 +63,72 @@
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>
+    <section class="mt-4">
+        <h2>Manage Bike Bookings</h2>
+        <button class="btn btn-secondary" id="fetchBikeBookings">Get Bike Bookings</button>
+        <table class="table table-striped mt-3">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Bike</th>
+                <th>Booking date</th>
+                <th>Start date</th>
+                <th>End date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="bikeBookingTable">
+            <!-- Booking rows will be dynamically populated -->
+            </tbody>
+        </table>
+    </section>
+
+    <section class="mt-4">
+        <h2>Repair List</h2>
+        <button class="btn btn-secondary" id="fetchBookings">Get Repairs</button>
+        <table class="table table-striped mt-3">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Repair Name</th>
+                <th>Repair Time (Hours)</th>
+                <th>Repair Price</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="repairTable">
+            <!-- Repair rows will be dynamically populated -->
+            </tbody>
+        </table>
+    </section>
+
     <div id="message" class="mt-3"></div>
+
+    <!-- Przycisk do usunięcia konta -->
+    <button id="deleteAccount" class="btn btn-danger mt-4">Delete My Account</button>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         fetch("http://localhost:8080/api/v1/auth/user/me")
-            .then(response => response.json)
+            .then(response => response.json())
             .then(data => {
-                document.getElementById("name").innerHTML = data.name;
-                document.getElementById("surname").innerHTML = data.surname;
-                document.getElementById("birthDate").innerHTML = data.birthDate;
+                document.getElementById("name").value = data.name;
+                document.getElementById("surname").value = data.surname;
+                document.getElementById("birthDate").value = data.birthDate;
             })
-            .catch(error => console.error('Error:', error))
-
+            .catch(error => console.error('Error:', error));
     });
 
     document.getElementById('updateForm').addEventListener('submit', async function(event) {
         event.preventDefault();
 
-        // Retrieve form data
         const name = document.getElementById('name').value;
         const surname = document.getElementById('surname').value;
         const birthDate = document.getElementById('birthDate').value;
 
-        // Build query parameters
         const params = new URLSearchParams();
         if (name) params.append('name', name);
         if (surname) params.append('surname', surname);
@@ -62,7 +140,6 @@
         }
 
         try {
-            // Send PUT request to the API
             const response = await fetch(`/api/v1/auth/user/update?${params.toString()}`, {
                 method: 'PUT'
             });
@@ -78,11 +155,136 @@
         }
     });
 
+    // Funkcja do wyświetlania wiadomości
     function showMessage(message, type) {
         const messageDiv = document.getElementById('message');
         messageDiv.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
     }
 
+    // Obsługa usuwania konta
+    document.getElementById('deleteAccount').addEventListener('click', async function () {
+        if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) return;
+
+        try {
+            const response = await fetch('api/v1/auth/user/delete', {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert("Your account has been deleted. Redirecting to home page.");
+                window.location.href = "/"; // Przekierowanie na stronę główną
+            } else {
+                showMessage("Failed to delete account. Please try again later.", "danger");
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, "danger");
+        }
+    });
+
+    document.getElementById('fetchBikeBookings').addEventListener('click', async function () {
+        try {
+            const response = await fetch('/api/v1/auth/user/bikeBooking');
+            if (response.ok) {
+                const bikeBookings = await response.json();
+                const bikeBookingTable = document.getElementById('bikeBookingTable');
+                bikeBookingTable.innerHTML = '';
+
+                bikeBookings.forEach(booking => {
+                    const bikes = booking.bikes.map(bike => bike.bikeName).join(', ');
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                    <td>${booking.bikeBookingId}</td>
+                    <td>${booking.user.login}</td>
+                    <td>${bikes}</td>
+                    <td>${booking.bbookingDate}</td>
+                    <td>${booking.bstartDate}</td>
+                    <td>${booking.bendDate}</td>
+                    <td>${booking.bikeStatus}</td>
+                    <td>
+                        <button class="btn btn-danger cancel-bike-booking" data-id="${booking.bikeBookingId}">Cancel</button>
+                    </td>
+                `;
+                    bikeBookingTable.appendChild(row);
+                });
+
+                document.querySelectorAll('.cancel-bike-booking').forEach(button => {
+                    button.addEventListener('click', async function () {
+                        const bikeBookingId = this.getAttribute('data-id');
+                        try {
+                            const cancelResponse = await fetch(`/api/v1/auth/user/bikeBooking/cancel/${bikeBookingId}`, {
+                                method: 'PUT',
+                            });
+
+                            if (cancelResponse.ok) {
+                                showMessage('Bike booking cancelled successfully!', 'success');
+                                document.getElementById('fetchBikeBookings').click(); // Refresh the table
+                            } else {
+                                showMessage('Failed to cancel bike booking.', 'danger');
+                            }
+                        } catch (error) {
+                            showMessage(`Error: ${error.message}`, 'danger');
+                        }
+                    });
+                });
+            } else {
+                showMessage('Failed to fetch bike bookings.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
+
+    // Fetch Repair Bookings and Render in Table
+    document.getElementById('fetchBookings').addEventListener('click', async function ()    {
+        try {
+            const response = await fetch('/api/v1/auth/user/repairBooking');
+            if (response.ok) {
+                const bookings = await response.json();
+                const bookingTable = document.getElementById('repairTable');
+                bookingTable.innerHTML = '';
+
+                bookings.forEach(booking => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                    <td>${booking.repairBookingId}</td>
+                    <td>${booking.user.login}</td>
+                    <td>${booking.repair.repairName}</td>
+                    <td>${booking.repairDate}</td>
+                    <td>${booking.repairStatus}</td>
+                    <td>
+                        <button class="btn btn-danger cancel-booking" data-id="${booking.repairBookingId}">Cancel</button>
+                    </td>
+                `;
+                    bookingTable.appendChild(row);
+                });
+
+                // Add event listeners for Cancel buttons
+                document.querySelectorAll('.cancel-booking').forEach(button => {
+                    button.addEventListener('click', async function () {
+                        const repairBookingId = this.getAttribute('data-id');
+                        try {
+                            const cancelResponse = await fetch(`api/v1/auth/user/repairBooking/cancel/${repairBookingId}`, {
+                                method: 'PUT',
+                            });
+
+                            if (cancelResponse.ok) {
+                                showMessage('Repair booking cancelled successfully!', 'success');
+                                document.getElementById('fetchBookings').click(); // Refresh the table
+                            } else {
+                                showMessage('Failed to cancel repair booking.', 'danger');
+                            }
+                        } catch (error) {
+                            showMessage(`Error: ${error.message}`, 'danger');
+                        }
+                    });
+                });
+            } else {
+                showMessage('Failed to fetch repair bookings.', 'danger');
+            }
+        } catch (error) {
+            showMessage(`Error: ${error.message}`, 'danger');
+        }
+    });
 </script>
 </body>
 </html>

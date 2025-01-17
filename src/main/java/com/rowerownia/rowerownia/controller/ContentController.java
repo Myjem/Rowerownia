@@ -31,28 +31,33 @@ public class ContentController {
     }
     @GetMapping("/admin")
     public String getadmin() {
-        System.out.println("ContentController.getHome -> home");
+        System.out.println("ContentController.getHome -> admin");
         return "admin";
     }
     @GetMapping("/user")
     public String getuser() {
-        System.out.println("ContentController.getHome -> home");
+        System.out.println("ContentController.getHome -> user");
         return "user";
     }
     @GetMapping("/bike")
     public String getbike() {
-        System.out.println("ContentController.getHome -> home");
+        System.out.println("ContentController.getHome -> bike");
         return "bike";
     }
     @GetMapping("/repair")
     public String getrepair() {
-        System.out.println("ContentController.getHome -> home");
+        System.out.println("ContentController.getHome -> repair");
         return "repair";
     }
     @GetMapping("/worker")
     public String getworker() {
-        System.out.println("ContentController.getHome -> home");
+        System.out.println("ContentController.getHome -> worker");
         return "worker";
+    }
+    @GetMapping("/workermanage")
+    public String getworkermanage() {
+        System.out.println("ContentController.getHome -> workermanage");
+        return "workermanage";
     }
     @GetMapping("/login")
     public String getLogin() {
@@ -78,10 +83,10 @@ public class ContentController {
 //        return "login";
         if (authentication.isAuthenticated() && authentication.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_WORKER"))) {
             System.out.println("ContentController.getLogin -> admin");
-            return "redirect:/admin";
+            return "redirect:/";
         } else if (authentication.isAuthenticated() && authentication.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_USER"))) {
             System.out.println("ContentController.getLogin -> home");
-            return "redirect:/home";
+            return "redirect:/";
         }
 
         System.out.println("ContentController.getLogin -> login");
