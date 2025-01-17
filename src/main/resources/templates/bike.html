@@ -39,7 +39,7 @@
           <a class="nav-link" href="/workermanage">Worker Manage</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-danger" href="#" id="logout">Wylogowywanie</a>
+          <a class="nav-link text-danger" href="/logout" id="logout">Wylogowywanie</a>
         </li>
       </ul>
     </div>
@@ -146,8 +146,18 @@
     const endDate = document.getElementById('endDate').value;
     const today = new Date().toISOString().split('T')[0];
 
-    if (!startDate || !endDate || selectedBikes.length === 0) {
-      showMessage('Please select bikes and dates.', 'danger');
+    if (!loggedUserId) {
+      showMessage('You must be logged in to make a reservation.', 'danger');
+      return;
+    }
+
+    if (!startDate || !endDate) {
+      showMessage('Please select both start and end dates for the reservation.', 'warning');
+      return;
+    }
+
+    if (selectedBikes.length === 0) {
+      showMessage(' Please select at least one bike to reserve.', 'warning');
       return;
     }
 
@@ -167,25 +177,33 @@
         endDate: endDate
       })
     })
-            .then(response => {
+            .then(async response => {
               if (!response.ok) {
-                return response.text().then(text => { throw new Error(`Error ${response.status}: ${text}`); });
+                const errorText = await response.text();
+
+
+                if (errorText.includes("already reserved")) {
+                  throw new Error("The bike you selected is **already reserved**! Please choose a different bike.");
+                }
+
+                throw new Error(" An error occurred while processing your reservation. One of your bikes is already reserved.");
               }
-              return response.text(); // Nie zakładaj, że odpowiedź to JSON
+              return response.text();
             })
             .then(text => {
               try {
-                const data = JSON.parse(text); // Sprawdzenie, czy odpowiedź to JSON
-                showMessage(data.message || 'Bikes reserved successfully!', 'success');
+                const data = JSON.parse(text);
+                showMessage(data.message || ' Bikes reserved successfully!', 'success');
               } catch (error) {
-                showMessage('Bikes reserved successfully!', 'success'); // Zakładamy, że odpowiedź była pusta
+                showMessage('Bikes reserved successfully!', 'success');
               }
             })
             .catch(error => {
               console.error("Booking error:", error);
-              showMessage(`Error: ${error.message}`, 'danger');
+              showMessage(error.message, 'danger');
             });
   }
+
 
   function showMessage(message, type) {
     const messageDiv = document.getElementById('message');

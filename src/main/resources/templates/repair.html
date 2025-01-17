@@ -39,7 +39,7 @@
                     <a class="nav-link" href="/workermanage">Worker Manage</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-danger" href="#" id="logout">Wylogowywanie</a>
+                    <a class="nav-link text-danger" href="/logout" id="logout">Wylogowywanie</a>
                 </li>
             </ul>
         </div>
@@ -132,14 +132,26 @@
     }
 
     function openReservationModal(repairId) {
+        if (!loggedUserId) {
+            showMessage('You must be logged in to make a reservation.', 'danger');
+            return;
+        }
+
         selectedRepairId = repairId;
         document.getElementById('selectedRepairId').value = repairId;
         const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
         modal.show();
     }
 
+
     document.getElementById('reservationForm').addEventListener('submit', async function(event) {
         event.preventDefault();
+
+        if (!loggedUserId) {
+            showMessage('You must be logged in to make a reservation.', 'danger');
+            return;
+        }
+
         const repairDate = document.getElementById('repairDate').value;
         if (!repairDate) {
             showMessage('Please select a repair date.', 'danger');
