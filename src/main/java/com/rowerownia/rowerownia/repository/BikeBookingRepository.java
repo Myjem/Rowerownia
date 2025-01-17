@@ -15,6 +15,7 @@ public interface BikeBookingRepository
     List<BikeBooking> findByBikesInAndBstartDateLessThanEqualAndBendDateGreaterThanEqual(List<Bike> bikes, LocalDate bstartDate, LocalDate bendDate); //funkcja zapobiegajaca overbookingu
     List<BikeBooking> findByBikes_BikeId(Integer bikeId);
     List<BikeBooking> findByUser_UserId(Integer userUserId);
+    List<BikeBooking> findByBikes_BikeIdAndBikeStatus(Integer bikeId, Enums.status bikeStatus);
     List<BikeBooking> findByUser_UserIdAndBikeStatus(Integer userUserId, Enums.status bikeStatus);
 
     List<BikeBooking> findByBikeStatus(Enums.status bikeStatus);

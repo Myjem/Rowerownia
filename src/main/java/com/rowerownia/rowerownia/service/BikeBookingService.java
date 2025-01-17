@@ -129,6 +129,10 @@ public class BikeBookingService {
             List<BikeBooking> conflicts = bikeBookingRepository.findByBikes_BikeId(bike.getBikeId());
 
             for (BikeBooking existingBooking : conflicts) {
+                if (existingBooking.getBikeStatus() == Enums.status.DELETED) {
+                    continue;
+                }
+
                 boolean isOverlapping = !(bikeBooking.getBendDate().isBefore(existingBooking.getBstartDate()) ||
                         bikeBooking.getBstartDate().isAfter(existingBooking.getBendDate()));
 
@@ -138,6 +142,7 @@ public class BikeBookingService {
                 }
             }
         }
+
         List<Bike> brokenBikes = bikeBooking.getBikes().stream()
                 .filter(bike -> bike.isBroken())
                 .collect(Collectors.toList());

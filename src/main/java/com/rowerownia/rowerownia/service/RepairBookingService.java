@@ -115,6 +115,9 @@ public class RepairBookingService {
         if(!dateBookings.isEmpty()){
             double time=0;
             for(RepairBooking booking: dateBookings){
+                if(booking.getRepairStatus().equals(Enums.status.DELETED)){
+                    continue;
+                }
                 time+=booking.getRepair().getRepairTime();
             }
             if(time+repair.getRepairTime()>8.0){
