@@ -56,7 +56,6 @@
 <div id="login-container" class="container mt-5">
     <h2>Login</h2>
 
-    <!-- Komunikat o błędzie logowania (ukryty domyślnie) -->
     <div id="login-error-message" class="alert alert-danger hidden"> Niepoprawne dane logowania. Spróbuj ponownie.</div>
     <div id="account-blocked-message" class="alert alert-danger hidden"> Konto zostało zablokowane po 5 nieudanych próbach logowania.</div>
 
@@ -73,7 +72,6 @@
         <a href="/register" id="to-signup">Don't have an account? Sign up</a>
     </form>
 
-    <!-- Licznik prób logowania -->
     <p id="attempts-message" class="text-center mt-2"></p>
 </div>
 
@@ -81,11 +79,9 @@
     const MAX_ATTEMPTS = 5;
 
     document.addEventListener('DOMContentLoaded', async function () {
-        // Ukrywamy komunikaty na start
         document.getElementById("login-error-message").classList.add("hidden");
         document.getElementById("account-blocked-message").classList.add("hidden");
 
-        // Sprawdź, czy strona została załadowana z błędem logowania
         if (window.location.search.includes("error=true")) {
             document.getElementById("login-error-message").classList.remove("hidden");
         }
@@ -114,7 +110,6 @@
                 const attempts = await response.json();
                 updateAttemptsMessage(attempts);
 
-                // Sprawdzenie, czy użytkownik jest zablokowany
                 if (attempts >= MAX_ATTEMPTS) {
                     document.getElementById("account-blocked-message").classList.remove("hidden");
                 }

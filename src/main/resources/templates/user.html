@@ -80,7 +80,6 @@
             </tr>
             </thead>
             <tbody id="bikeBookingTable">
-            <!-- Booking rows will be dynamically populated -->
             </tbody>
         </table>
     </section>
@@ -99,14 +98,13 @@
             </tr>
             </thead>
             <tbody id="repairTable">
-            <!-- Repair rows will be dynamically populated -->
             </tbody>
         </table>
     </section>
 
     <div id="message" class="mt-3"></div>
 
-    <!-- Przycisk do usunięcia konta -->
+
     <button id="deleteAccount" class="btn btn-danger mt-4">Delete My Account</button>
 </div>
 
@@ -155,13 +153,13 @@
         }
     });
 
-    // Funkcja do wyświetlania wiadomości
+
     function showMessage(message, type) {
         const messageDiv = document.getElementById('message');
         messageDiv.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
     }
 
-    // Obsługa usuwania konta
+
     document.getElementById('deleteAccount').addEventListener('click', async function () {
         if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) return;
 
@@ -172,7 +170,7 @@
 
             if (response.ok) {
                 alert("Your account has been deleted. Redirecting to home page.");
-                window.location.href = "/"; // Przekierowanie na stronę główną
+                window.location.href = "/";
             } else {
                 showMessage("Failed to delete account. Please try again later.", "danger");
             }
@@ -234,7 +232,6 @@
         }
     });
 
-    // Fetch Repair Bookings and Render in Table
     document.getElementById('fetchBookings').addEventListener('click', async function ()    {
         try {
             const response = await fetch('/api/v1/auth/user/repairBooking');
@@ -258,7 +255,6 @@
                     bookingTable.appendChild(row);
                 });
 
-                // Add event listeners for Cancel buttons
                 document.querySelectorAll('.cancel-booking').forEach(button => {
                     button.addEventListener('click', async function () {
                         const repairBookingId = this.getAttribute('data-id');
